@@ -1,0 +1,74 @@
+/*!
+ * Start Bootstrap - Full (https://startbootstrap.com/template-overviews/full)
+ * Copyright 2013-2017 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-full/blob/master/LICENSE)
+ */
+
+.body {
+	background-color: #999;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+.first_row {
+	padding-top: 60px;
+}
+
+.vertical_1 {
+	writing-mode: vertical-lr;
+	text-orientation: bt;
+	-moz-transform: rotate(-180deg);
+	-webkit-transform: rotate(-180deg);
+	transform: rotate(-180deg);
+}
+
+.vertical_2 {
+	writing-mode: vertical-lr;
+	text-orientation: mixed;
+}
+
+.vertical_1, .vertical_2, a, p, h4 {
+	text-transform: lowercase;
+	font-weight: bold;
+}
+
+.pizza {
+	width: 100%;
+	max-height: 700px;
+	display: block;
+}
+
+.bt_join {
+	color: #000;
+}
+
+.note, .note a {
+	font-size: 10pt;
+	color: #000;
+}
+
+.nav-item a {
+	font-size: 16pt;
+	text-decoration: none;
+	color: #000;
+}
+
+.nav :hover {
+	text-decoration: underline;
+}
+
+.nav .active {
+	text-decoration: underline;
+}
+
+.footer {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+}
