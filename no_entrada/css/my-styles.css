@@ -1,0 +1,20 @@
+/*
+Theme Name: No Entrada
+Author: Paula Marques
+Author URL: www.infinite-awesome.com
+*/
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+#theRunAwayButton {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    cursor: none;
+    user-select: none;
+}
