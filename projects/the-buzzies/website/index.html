@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Buzzies</title>
+  <link rel="shortcut icon" href="../images/sticker-andre-apple.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #c8e8c2;
+      background-image: url('bg.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .scene img {
+      position: absolute;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .character {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      transform-origin: center bottom;
+    }
+
+    .character:hover {
+      transform: scale(1.07);
+    }
+
+    .character.bounce {
+      animation: bounce 0.45s ease forwards;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1)    translateY(0); }
+      25%  { transform: scale(1.15) translateY(-8px); }
+      55%  { transform: scale(0.95) translateY(0); }
+      75%  { transform: scale(1.05) translateY(-3px); }
+      100% { transform: scale(1)    translateY(0); }
+    }
+
+    .logo {
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="scene" id="scene"></div>
+
+  <script>
+    const CHARACTERS = [
+      {
+        id: 'chad_cheese',
+        img: 'characters/chad_cheese.png',
+        sounds: ['sounds/chad_cheese.wav'],
+        style: 'left:1vw; bottom:20vh; width:11vw;'
+      },
+      {
+        id: 'reow',
+        img: 'characters/reow.png',
+        sounds: ['sounds/reow_1.wav', 'sounds/reow_2.wav'],
+        style: 'left:1vw; bottom:4vh; width:20vw;'
+      },
+      {
+        id: 'giles',
+        img: 'characters/giles.png',
+        sounds: ['sounds/giles_1.wav', 'sounds/giles_2.wav'],
+        style: 'left:25vw; top:4vh; width:13vw;'
+      },
+      {
+        id: 'waka_waka',
+        img: 'characters/waka_waka.png',
+        sounds: ['sounds/waka_1.wav', 'sounds/waka_2.wav'],
+        style: 'left:23vw; bottom:4vh; width:12vw;'
+      },
+      {
+        id: 'poo',
+        img: 'characters/poo.png',
+        sounds: ['sounds/poo_1.wav', 'sounds/poo_2.wav'],
+        style: 'left:62vw; bottom:6vh; width:9vw;'
+      },
+      {
+        id: 'touche',
+        img: 'characters/touche.png',
+        sounds: ['sounds/touche_1.wav', 'sounds/touche_2.wav'],
+        style: 'left:60vw; top:60vh; width:13vw;'
+      },
+      {
+        id: 'travel_man',
+        img: 'characters/travel_man.png',
+        sounds: ['sounds/travel_man_1.wav', 'sounds/travel_man_2.wav'],
+        style: 'left:40vw; bottom:4vh; width:15vw;'
+      },
+      {
+        id: 'nigel',
+        img: 'characters/nigel.png',
+        sounds: ['sounds/nigel_1.wav', 'sounds/nigel_2.wav'],
+        style: 'right:5vw; top:8vh; width:14vw;'
+      },
+      {
+        id: 'andre_apple',
+        img: 'characters/andre_apple.png',
+        sounds: ['sounds/andre_apple_1.wav', 'sounds/andre_apple_2.wav'],
+        style: 'right:2vw; bottom:4vh; width:18vw;'
+      },
+      {
+        id: 'flies_1',
+        img: 'characters/flies.png',
+        sounds: ['sounds/flies.wav'],
+        style: 'left:34vw; top:42vh; width:5vw;'
+      },
+      {
+        id: 'flies_2',
+        img: 'characters/flies_2.png',
+        sounds: ['sounds/flies.wav'],
+        style: 'left:52vw; top:50vh; width:4vw;'
+      },
+      {
+        id: 'flies_3',
+        img: 'characters/flies_3.png',
+        sounds: ['sounds/flies.wav'],
+        style: 'left:18vw; top:52vh; width:4vw;'
+      },
+    ];
+
+    const SCENE_ELEMENTS = [
+      { img: 'characters/cloud_1.png', style: 'left:20vw; top:4vh; width:14vw;' },
+      { img: 'characters/cloud_2.png', style: 'left:52vw; top:2vh; width:17vw;' },
+      { img: 'characters/sun.png',     style: 'right:4vw; top:3vh; width:9vw;'  },
+      { img: 'characters/kite.png',    style: 'right:22vw; top:28vh; width:13vw;' },
+    ];
+
+    const scene = document.getElementById('scene');
+    const soundIndex = {};
+
+    // Scene elements
+    SCENE_ELEMENTS.forEach(el => {
+      const img = document.createElement('img');
+      img.src = el.img;
+      img.alt = '';
+      img.style.cssText = el.style;
+      scene.appendChild(img);
+    });
+
+    // Characters
+    CHARACTERS.forEach(char => {
+      soundIndex[char.id] = 0;
+
+      const img = document.createElement('img');
+      img.src = char.img;
+      img.alt = char.id.replace(/_/g, ' ');
+      img.className = 'character';
+      img.style.cssText = char.style;
+
+      img.addEventListener('click', () => {
+        const audio = new Audio(char.sounds[soundIndex[char.id]]);
+        audio.play().catch(() => {});
+        soundIndex[char.id] = (soundIndex[char.id] + 1) % char.sounds.length;
+
+        img.classList.remove('bounce');
+        void img.offsetWidth; // force reflow to restart animation
+        img.classList.add('bounce');
+        img.addEventListener('animationend', () => img.classList.remove('bounce'), { once: true });
+      });
+
+      scene.appendChild(img);
+    });
+  </script>
+</body>
+
+</html>

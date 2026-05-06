@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Craig Johnson | Design Leader</title>
+
+  <!-- Hello, my name is Craig, and this is my website. I wrote all this code myself, and I'm very proud of that!
+  Thanks for taking a look under the hood. I hope you found what you were looking for :)
+  Have a great day! -->
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="../../images/logo.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <!-- Bootstrap Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <script src="../../js/sidebar.js"></script>
+  <script src="../../js/lightbox.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <div class="page-layout">
+    <site-sidebar root="../.."></site-sidebar>
+    <main class="main-content">
+      <section id="intro-heading">
+        <h1>The Buzzies</h1>
+        <h2>Illustration</h2>
+        <hr>
+        <p>The Buzzies was a collaborative project with <a href="https://paulamarques.info/" target="_blank">Paula Marques</a>, experimenting with a little digital family.</p>
+        <br>
+        <a class="btn-back" href="website/index.html" target="_blank">Go Buzzies</a>
+        <br><br><br>
+        <div id="gallery"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const images = [
+        { src: 'images/buzzies-logo.gif',          alt: 'The Buzzies logo' },
+        { src: 'images/buzzies-characters.gif',    alt: 'The Buzzies characters' },
+        { src: 'images/andre_apple_stickers.jpg',  alt: 'The Buzzies — Andre Apple stickers' },
+        { src: 'images/sticker-andre-apple.png',   alt: 'The Buzzies — Andre Apple sticker sheet' },
+        { src: 'images/sticker-chad-cheese.png',   alt: 'The Buzzies — Chad Cheese sticker sheet' },
+        { src: 'images/sticker-clive.png',         alt: 'The Buzzies — Clive sticker sheet' },
+        { src: 'images/sticker-lemon.png',         alt: 'The Buzzies — Lemon sticker sheet' },
+        { src: 'images/sticker-the-beat.png',      alt: 'The Buzzies — The Beat sticker sheet' },
+        { src: 'images/calendar.jpg',              alt: 'The Buzzies — calendar' },
+        { src: 'images/memory-cards-photo-1.jpg',  alt: 'The Buzzies — memory cards' },
+        { src: 'images/memory-cards-photo-2.jpg',  alt: 'The Buzzies — memory cards' },
+        { src: 'images/memory-cards-photo-3.jpg',  alt: 'The Buzzies — memory cards' },
+        { src: 'images/hairy-man.png',             alt: 'The Buzzies — hairy man' },
+        { src: 'images/memory-card-02.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-03.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-04.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-05.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-06.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-07.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-08.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-09.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-10.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-11.jpg',        alt: 'The Buzzies — memory card' },
+        { src: 'images/memory-card-12.jpg',        alt: 'The Buzzies — memory card' },
+      ];
+
+      const gallery = document.getElementById('gallery');
+      let i = 0;
+
+      while (i < images.length) {
+        const remaining = images.length - i;
+        const maxCols = Math.min(3, remaining);
+        const cols = Math.floor(Math.random() * maxCols) + 1;
+
+        if (cols === 1) {
+          const img = document.createElement('img');
+          img.src = images[i].src;
+          img.alt = images[i].alt;
+          gallery.appendChild(img);
+        } else {
+          const row = document.createElement('div');
+          row.style.cssText = `display:grid;grid-template-columns:repeat(${cols},1fr);gap:12px;margin-bottom:20px`;
+          for (let j = 0; j < cols; j++) {
+            const img = document.createElement('img');
+            img.src = images[i + j].src;
+            img.alt = images[i + j].alt;
+            img.style.marginBottom = '0';
+            img.style.height = 'auto';
+            row.appendChild(img);
+          }
+          gallery.appendChild(row);
+        }
+
+        i += cols;
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

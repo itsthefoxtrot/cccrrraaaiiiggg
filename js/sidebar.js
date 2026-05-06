@@ -23,8 +23,11 @@ const PROJECTS = [
   { title: 'Design Led Futures',                         slug: 'dlf',              path: 'projects/dlf/dlf.html' },
   { title: 'Graveside',                                  slug: 'graveside',        path: 'projects/graveside/graveside.html' },
   { title: 'I Am Derek',                                 slug: 'iamderek',         path: 'projects/iamderek/iamderek.html' },
+  { title: 'Crowds of Men',                              slug: 'crowds-of-men',    path: 'projects/Crowds%20Of%20Men/crowds-of-men.html' },
+  { title: 'The Buzzies',                                slug: 'the-buzzies',      path: 'projects/the-buzzies/the-buzzies.html' },
   { title: 'Nero Padilla',                               slug: null, external: true, path: 'https://www.cccrrraaaiiiggg.com/nero/index.html' },
   { title: 'The Church of Pizza and Next Day Reheats',   slug: null, external: true, path: 'https://cccrrraaaiiiggg.com/churchofpizza/index.html' },
+  { title: 'No Entrada',                                 slug: null, newTab: true,   path: 'no_entrada/index.html' },
 ];
 
 class SiteSidebar extends HTMLElement {
@@ -33,16 +36,16 @@ class SiteSidebar extends HTMLElement {
     const year = new Date().getFullYear();
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
 
-    const link = (slug, href, label, external = false) => {
+    const link = (slug, href, label, external = false, newTab = false) => {
       const active = slug && currentPage === slug ? ' nav-active' : '';
-      const target = external ? ' target="_blank"' : '';
-      const ext = external ? '<i class="fas fa-external-link-alt"></i> ' : '';
+      const target = (external || newTab) ? ' target="_blank"' : '';
+      const ext = (external || newTab) ? '<i class="fas fa-external-link-alt"></i> ' : '';
       return `<a class="sidebar-link${active}" href="${href}"${target}>${ext}${label}</a>`;
     };
 
     const projectLinks = PROJECTS.map(p => {
       const href = p.external ? p.path : `${root}/${p.path}`;
-      return link(p.slug, href, p.title, p.external);
+      return link(p.slug, href, p.title, p.external, p.newTab);
     }).join('\n        ');
 
     const parent = this.parentElement;
@@ -58,7 +61,7 @@ class SiteSidebar extends HTMLElement {
         ${projectLinks}
   </nav>
   <nav class="sidebar-nav">
-    ${link('index',        `${root}/index.html`,        'About')}
+    ${link('about',        `${root}/about.html`,        'About')}
     ${link('publications', `${root}/publications.html`, 'Publications')}
     ${link('links',        `${root}/links.html`,        'Links')}
   </nav>

@@ -23,6 +23,7 @@
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
   <script src="js/sidebar.js"></script>
+  <script src="js/lightbox.js"></script>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;700&display=swap" rel="stylesheet">
@@ -38,23 +39,95 @@
     <main class="main-content">
 
       <section id="intro-heading">
-        <h1>Craig Johnson</h1>
-        <hr>
-        <p>Hi there! 👋</p>
-        <p>You've found my little corner of the internet. Welcome.</p>
-        <p>I'm Craig Johnson: a Kiwi-made, Zurich-based design leader and cat-dad with 16+ years of experience across design, UX, and leadership.</p>
-        <p>Over the years, I've worked across startups, growth companies, and scaled organisations, helping teams understand customer problems, shape better products, and build stronger design practices across e-commerce, FinTech, SaaS, B2C, and B2B enterprise products.</p>
-        <p>I'm also passionate about video games, campervanning, music, animals, reading, and woodworking.</p>
-        <p>Since 2019, I've been working as a Senior UX Manager at <a href="https://www.getyourguide.com/" target="_blank">GetYourGuide</a>, partnering with product, engineering, and leadership teams across multiple product areas.</p>
-        <p>This website is mostly personal projects. A commercial portfolio is available on request.</p>
-        <br>
-        <a class="btn-back" href="https://www.linkedin.com/in/craigjohnsonis/" target="_blank">Contact me on Linkedin</a>
-        <br><br><br>
         <img src="images/desktop.jpg" alt="Craig Johnson">
+        <div id="gallery"></div>
       </section>
 
     </main>
   </div>
+
+  <script>
+    (function () {
+      const ALL_IMAGES = [
+        'projects/dlf/dlf_1.jpg',
+        'projects/dlf/dlf_2.jpg',
+        'projects/dlf/dlf_3.jpg',
+        'projects/lies/lies_1.jpg',
+        'projects/lies/lies_2.jpg',
+        'projects/lies/lies_3.jpg',
+        'projects/mbfwb-spring/mbfwb_-1.jpg',
+        'projects/mbfwb-spring/mbfwb_-4.jpg',
+        'projects/mbfwb-spring/mbfwb_-8.jpg',
+        'projects/mbfwb-spring/mbfwb_-13.jpg',
+        'projects/mbfwb-spring/mbfwb_-20.jpg',
+        'projects/mbfwb-winter/mbfwb_13_-1.jpg',
+        'projects/mbfwb-winter/mbfwb_13_-6.jpg',
+        'projects/mbfwb-winter/mbfwb_13_-12.jpg',
+        'projects/mbfwb-winter/mbfwb_13_-18.jpg',
+        'projects/mbfwb-winter/mbfwb_13_-25.jpg',
+        'projects/medusa/medusa-1.jpg',
+        'projects/medusa/medusa-4.jpg',
+        'projects/medusa/medusa-8.jpg',
+        'projects/medusa/medusa-13.jpg',
+        'projects/medusa/medusa-17.jpg',
+        'projects/mutuo/mutuo_1.jpg',
+        'projects/mutuo/mutuo_2.jpg',
+        'projects/mutuo/mutuo_3.jpg',
+        'projects/mutuo/mutuo_4.jpg',
+        'projects/tardigotchi/tardigotchi_1.jpg',
+        'projects/tardigotchi/tardigotchi_2.jpg',
+        'projects/tardigotchi/tardigotchi_3.jpg',
+        'projects/tardigotchi/tardigotchi_4.jpg',
+        'projects/the-blue-ones/the-blue-ones-00.jpg',
+        'projects/the-blue-ones/the-blue-ones-01.jpg',
+        'projects/the-blue-ones/the-blue-ones-02.jpg',
+        'projects/the-blue-ones/the-blue-ones-03.jpg',
+        'projects/the-buzzies/images/buzzies-logo.gif',
+        'projects/the-buzzies/images/sticker-andre-apple.png',
+        'projects/the-buzzies/images/sticker-clive.png',
+        'projects/the-buzzies/images/calendar.jpg',
+        'projects/the-buzzies/images/memory-cards-photo-1.jpg',
+        'projects/the-lanf/the-lanf-01.jpg',
+        'projects/the-lanf/the-lanf-02.jpg',
+        'projects/untitled/untitled-01.jpg',
+        'projects/untitled/untitled-02.jpg',
+      ];
+
+      // Shuffle
+      const images = ALL_IMAGES.slice().sort(() => Math.random() - 0.5);
+
+      const gallery = document.getElementById('gallery');
+      let i = 0;
+
+      while (i < images.length) {
+        const remaining = images.length - i;
+        const maxCols = Math.min(3, remaining);
+        const cols = Math.floor(Math.random() * maxCols) + 1;
+
+        if (cols === 1) {
+          const img = document.createElement('img');
+          img.src = images[i];
+          img.alt = '';
+          gallery.appendChild(img);
+        } else {
+          const row = document.createElement('div');
+          row.style.cssText = `display:grid;grid-template-columns:repeat(${cols},1fr);gap:12px;margin-bottom:20px`;
+          for (let j = 0; j < cols; j++) {
+            const img = document.createElement('img');
+            img.src = images[i + j];
+            img.alt = '';
+            img.style.marginBottom = '0';
+            img.style.height = 'auto';
+            row.appendChild(img);
+          }
+          gallery.appendChild(row);
+        }
+
+        i += cols;
+      }
+    })();
+  </script>
+
 </body>
 
 </html>
