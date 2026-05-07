@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="modal">
+        <div class="dialog">
+            <div class="dialog-titlebar">
+                <span class="win-btn"></span>
+                <span class="dialog-title">Average</span>
+            </div>
+            <div class="dialog-body">
+                <div class="field">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" required>
+                </div>
+                <div class="field">
+                    <label for="country">Country of Residence</label>
+                    <select id="country"></select>
+                </div>
+                <div class="dialog-btns">
+                    <button id="start">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="borrowed" class="hidden">
+        <p>you're living on borrowed time.</p>
+    </div>
+
+    <div id="app" class="hidden">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

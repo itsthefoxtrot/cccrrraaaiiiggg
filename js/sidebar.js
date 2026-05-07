@@ -1,6 +1,8 @@
 const LAST_UPDATED = '05/2026';
 
 const PROJECTS = [
+  { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/mr-average/index.html' },
+  { title: 'Genesis',                                    slug: null, newTab: true,   path: 'sites/genesis/index.html' },
   { title: 'Pips',                                         slug: 'pips',             path: 'projects/pips/pips.html' },
   { title: 'Tardigotchi',                                slug: 'tardigotchi',      path: 'projects/tardigotchi/tardigotchi.html' },
   { title: 'The Last Man Standing',                      slug: 'lastmanstanding',  path: 'projects/lastmanstanding/lastmanstanding.html' },
@@ -25,7 +27,6 @@ const PROJECTS = [
   { title: 'I Am Derek',                                 slug: 'iamderek',         path: 'projects/iamderek/iamderek.html' },
   { title: 'Crowds of Men',                              slug: 'crowds-of-men',    path: 'projects/Crowds%20Of%20Men/crowds-of-men.html' },
   { title: 'The Buzzies',                                slug: 'the-buzzies',      path: 'projects/the-buzzies/the-buzzies.html' },
-  { title: 'Genesis',                                    slug: null, newTab: true,   path: 'sites/genesis/index.html' },
   { title: 'Nero Padilla',                               slug: null, external: true, path: 'https://www.cccrrraaaiiiggg.com/sites/nero/index.html' },
   { title: 'The Church of Pizza and Next Day Reheats',   slug: null, external: true, path: 'https://cccrrraaaiiiggg.com/sites/churchofpizza/index.html' },
   { title: 'No Entrada',                                 slug: null, newTab: true,   path: 'sites/no_entrada/index.html' },
