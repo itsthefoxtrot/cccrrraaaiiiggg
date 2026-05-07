@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Genesis</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; overflow: hidden; }
+:root {
+  --paper: #efeee8;
+  --panel: #d8d5ce;
+  --panel-dark: #b8b4aa;
+  --ink: #111;
+  --muted: #5f5f5f;
+  --green: #087a32;
+  --green-soft: #dff3e6;
+  --red: #9d1b1b;
+  --blue: #152d85;
+}
+body {
+  height: 100%;
+  overflow: hidden;
+  padding-top: 23px;
+  color: var(--ink);
+  background-color: #696969;
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.06) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,.08) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,.08) 75%);
+  background-size: 6px 6px;
+  background-position: 0 0, 0 3px, 3px -3px, -3px 0;
+  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+}
+button, select { font: inherit; color: inherit; }
+#menubar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  height: 23px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  background: #fff;
+  border-bottom: 1px solid #999;
+  user-select: none;
+}
+.menu-item { padding: 2px 8px; border-radius: 2px; cursor: default; }
+.menu-item:hover { background: #000; color: #fff; }
+#save-indicator { margin-left: 6px; color: #777; font-size: 10px; }
+#clock { margin-left: auto; padding-right: 4px; font-size: 11px; color: #333; }
+#app {
+  height: calc(100vh - 23px);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  padding: 8px;
+  overflow: hidden;
+}
+.topbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 7px;
+  background: var(--panel);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+}
+.top-stat {
+  min-width: 0;
+  padding: 5px 7px;
+  background: var(--paper);
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #aaa;
+}
+.top-label {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.top-value {
+  min-height: 20px;
+  overflow: hidden;
+  font-family: "Courier New", monospace;
+  font-size: 19px;
+  font-weight: bold;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.top-value.bump, .stat-value.bump { animation: bump 230ms ease-out; }
+@keyframes bump {
+  0% { background: #fff; color: var(--green); }
+  100% { background: transparent; color: inherit; }
+}
+.layout {
+  display: grid;
+  grid-template-columns: 230px minmax(390px, 1fr) 285px;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+.panel {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+}
+.overview-panel { flex: 1; }
+.overview-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.title {
+  position: relative;
+  flex: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(to bottom, #000 0 1px, var(--panel) 1px 2px);
+}
+.title span {
+  padding: 0 6px;
+  background: var(--panel);
+  font-size: 11px;
+  font-weight: bold;
+}
+.body {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 7px;
+}
+.col {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 4px 8px;
+  background: var(--panel);
+  border: 1px solid #000;
+  border-right-color: #555;
+  border-bottom-color: #555;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #888;
+  cursor: pointer;
+  text-align: center;
+}
+.btn:hover:not(:disabled) { background: #e4e1da; }
+.btn:active:not(:disabled) {
+  border-top-color: #555; border-left-color: #555;
+  border-right-color: #000; border-bottom-color: #000;
+  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #888;
+}
+.btn:disabled { color: #8a8a8a; background: #c9c5bd; cursor: default; }
+.btn.primary {
+  width: 100%;
+  min-height: 76px;
+  flex-direction: column;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #888, 0 0 0 1px #000;
+}
+.btn.primary small { font-size: 11px; font-weight: normal; }
+.action-wrap { position: relative; }
+.float {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  z-index: 3;
+  padding: 1px 4px;
+  border: 1px solid var(--green);
+  background: #fff;
+  color: var(--green);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  pointer-events: none;
+  animation: floatUp .9s ease-out forwards;
+}
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(8px); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+  border-bottom: 1px dotted #aaa;
+}
+.stat-label { color: var(--muted); }
+.stat-value {
+  text-align: right;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+.mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.mini-item {
+  display: flex;
+  justify-content: space-between;
+  min-width: 0;
+  max-width: 100%;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px dotted #aaa;
+}
+.mini-item span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mini-value {
+  flex-shrink: 0;
+  color: #222;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  text-align: right;
+}
+.mini-help {
+  position: relative;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #000;
+  background: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: help;
+}
+.mini-help::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 5px);
+  z-index: 20;
+  width: min(190px, calc(100vw - 32px));
+  padding: 5px;
+  border: 1px solid #000;
+  background: #fff;
+  color: #111;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.35);
+  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+.mini-help:hover::after { opacity: 1; }
+.mini-note {
+  padding: 2px 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.subhead {
+  margin-top: 2px;
+  color: #555;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.board-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px;
+  background: var(--paper);
+  border: 1px solid #000;
+}
+.segmented { display: flex; gap: 3px; flex-wrap: wrap; }
+.segmented .btn {
+  min-height: 22px;
+  padding: 2px 7px;
+  font-size: 10px;
+}
+.segmented .active {
+  background: #111;
+  color: #fff;
+  box-shadow: none;
+}
+#generator-list, #upgrade-list {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.generator-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 7px;
+  background: var(--paper);
+  border: 1px solid #000;
+}
+.generator-row.flash { animation: rowFlash 420ms ease-out; }
+@keyframes rowFlash {
+  0% { background: #fff; }
+  100% { background: var(--paper); }
+}
+.gen-icon {
+  width: 24px; height: 24px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px solid #000;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+.gen-main { min-width: 0; }
+.gen-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gen-name { font-size: 13px; font-weight: bold; }
+.gen-owned-title {
+  font-size: 18px;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  line-height: 1.1;
+}
+.gen-type {
+  color: var(--muted);
+  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;
+}
+.owned { color: var(--muted); font-family: "Courier New", monospace; white-space: nowrap; }
+.gen-desc {
+  margin: 1px 0 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.gen-output {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.gen-output .gen-rate {
+  color: var(--ink);
+  font-weight: bold;
+}
+.progress-shell {
+  height: 13px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 #aaa;
+}
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 4px, transparent 4px 8px),
+    var(--green);
+  transition: width 90ms linear;
+}
+.progress-shell.fast .progress-fill {
+  width: 100% !important;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,.18), rgba(0,0,0,.08)),
+    var(--green);
+  position: relative;
+}
+.progress-shell.fast .progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 10px, rgba(0,0,0,.05) 10px 20px);
+  background-size: 20px 100%;
+  animation: fastBar 430ms linear infinite;
+  mix-blend-mode: screen;
+  opacity: 0.95;
+}
+@keyframes fastBar {
+  from { background-position: 0 0; }
+  to { background-position: 20px 0; }
+}
+.gen-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.timer { font-family: "Courier New", monospace; font-size: 10px; color: #333; }
+.gen-actions { display: flex; gap: 4px; }
+.gen-actions .btn { min-height: 23px; padding: 2px 7px; font-size: 10px; }
+.gen-actions .btn.need {
+  color: #777;
+  background: #cbc7bf;
+}
+.badge {
+  display: inline-block;
+  padding: 1px 4px;
+  border: 1px solid #000;
+  background: #fff;
+  font-size: 9px;
+  font-weight: bold;
+}
+.badge.auto { color: var(--green); border-color: var(--green); }
+.locked {
+  opacity: .68;
+  grid-template-columns: 28px minmax(0, 1fr);
+}
+.upgrade-card {
+  padding: 7px;
+  background: var(--paper);
+  border: 1px solid #000;
+}
+.upgrade-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.upgrade-name { font-weight: bold; }
+.upgrade-cost {
+  font-family: "Courier New", monospace;
+  white-space: nowrap;
+}
+.upgrade-desc {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.upgrade-effect {
+  margin-bottom: 6px;
+  color: var(--blue);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: bold;
+}
+.empty {
+  padding: 8px;
+  color: #777;
+  background: var(--paper);
+  border: 1px dotted #888;
+  line-height: 1.4;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,.35);
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  width: min(360px, 100%);
+  background: var(--panel);
+  border: 1px solid #000;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.45);
+}
+.modal .body { gap: 10px; }
+.modal h2 { font-size: 14px; margin-bottom: 2px; }
+.modal p {
+  margin: 0 0 6px;
+  line-height: 1.45;
+}
+.formula-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  background: var(--paper);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+  font-size: 10px;
+}
+.formula-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.formula-tagline {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .04em;
+}
+.formula-part {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+.formula-op { color: var(--muted); }
+.formula-result {
+  margin-left: auto;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  color: var(--green);
+}
+@media (max-width: 920px) {
+  .topbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  #app { padding: 5px; }
+  .topbar { grid-template-columns: 1fr; }
+  .generator-row { grid-template-columns: 24px minmax(0, 1fr); }
+  .gen-actions { grid-column: 1 / -1; justify-content: flex-end; }
+  .top-value { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+<div id="menubar">
+  <span class="menu-item" style="font-weight:bold;" onclick="showAboutModal()">Genesis</span>
+  <span class="menu-item" onclick="saveGame(true)">Save</span>
+  <span class="menu-item" onclick="resetGame()">New Game</span>
+  <span id="save-indicator"></span>
+  <span id="clock">12:00 PM</span>
+</div>
+
+<main id="app">
+  <section class="topbar">
+    <div class="top-stat">
+      <div class="top-label">Ideas/sec</div>
+      <div class="top-value" id="idea-rate-display">+0 ideas/sec</div>
+    </div>
+    <div class="top-stat">
+      <div class="top-label">Ideas</div>
+      <div class="top-value" id="ideas-display">2 ideas</div>
+    </div>
+    <div class="top-stat">
+      <div class="top-label">Money</div>
+      <div class="top-value" id="money-display">$0</div>
+    </div>
+    <div class="top-stat">
+      <div class="top-label">Income</div>
+      <div class="top-value" id="income-display">+$0/sec</div>
+    </div>
+  </section>
+
+  <div class="formula-bar" id="formula-bar"></div>
+
+  <section class="layout">
+    <div class="col">
+      <section class="panel overview-panel">
+        <div class="title"><span>The Desk</span></div>
+        <div class="body overview-body">
+          <div class="subhead">Goals</div>
+          <div class="mini-list" id="goal-list"></div>
+          <div class="subhead">Purchased</div>
+          <div class="mini-list" id="purchased-list"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="title"><span>Generators</span></div>
+      <div class="body">
+        <div class="board-tools">
+          <div>
+            <div class="subhead" style="margin:0;">Buy Mode</div>
+            <div id="buy-mode-label">Buying 1</div>
+          </div>
+          <div class="segmented" id="buy-mode-buttons"></div>
+        </div>
+        <div id="generator-list"></div>
+      </div>
+    </section>
+
+    <div class="col">
+      <section class="panel" style="flex:1;">
+        <div class="title"><span>Upgrades</span></div>
+        <div class="body">
+          <div id="upgrade-list"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="reset-modal">
+  <div class="modal">
+    <div class="title"><span>New Game</span></div>
+    <div class="body">
+      <div>
+        <h2>Start over?</h2>
+        <p>All progress will be lost.</p>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn" style="flex:1;" onclick="confirmReset()">Start New Game</button>
+        <button class="btn" style="flex:1;" onclick="closeResetModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="about-modal">
+  <div class="modal">
+    <div class="title"><span>About Genesis</span></div>
+    <div class="body" style="text-align:center;">
+      <div>
+        <h2 style="margin-top:16px;margin-bottom:16px;">Genesis</h2>
+        <p>Have ideas - make money.</p>
+        <p>Genesis is an idle clicker game about the compounding value of ideas. Can your shower thought become the next paradigm shift?</p>
+        <p>Now we have AI to execute everything for us, it's the ideas we have that'll make the money. More ideas = more money. The rest is admin.</p>
+        <p style="margin-top:16px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a>.</p>
+      </div>
+      <button class="btn" onclick="closeAboutModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="offline-modal">
+  <div class="modal">
+    <div class="title"><span>While You Were Away</span></div>
+    <div class="body">
+      <div>
+        <h2>Progress was filed.</h2>
+        <p id="offline-summary"></p>
+      </div>
+      <button class="btn" onclick="closeOfflineModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAVE_KEY = 'spark_idle_save_v1';
+const SAVE_VERSION = 1;
+const OFFLINE_CAP_SECONDS = 8 * 60 * 60;
+const BUY_MODES = [1, 10, 100, 'max'];
+const NUMBER_SUFFIXES = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+const THINKING_LABELS = ['Thinking', 'Brewing', 'Percolating', 'Mulling', 'Incubating', 'Marinating', 'Pondering', 'In the zone', 'Stewing', 'Ruminating', 'Daydreaming', 'On a walk', 'In the shower', 'Connecting', 'Lost in it', 'Processing'];
+const GENERATOR_MILESTONES = [
+  { count: 10, multiplier: 2 },
+  { count: 25, multiplier: 2 },
+  { count: 50, multiplier: 2 },
+  { count: 100, multiplier: 3 },
+  { count: 200, multiplier: 5 }
+];
+
+const generatorDefs = [
+  { id:'shower_thought', name:'Shower Thought', pluralName:'Shower Thoughts', actionVerb:'Have It', description:'The lone spark. You weren\'t even trying.', baseCost:15, costMultiplier:1.15, baseIdeasPerCycle:1, baseCycleSeconds:3, unlockAt:0 },
+  { id:'notebook', name:'Notebook', pluralName:'Notebooks', actionVerb:'Fill a Page', description:'The idea exists outside your head now.', baseCost:100, costMultiplier:1.15, baseIdeasPerCycle:4, baseCycleSeconds:5, unlockAt:10 },
+  { id:'conversation', name:'Conversation', pluralName:'Conversations', actionVerb:'Start Talking', description:'Two people. The idea survives contact.', baseCost:1100, costMultiplier:1.15, baseIdeasPerCycle:15, baseCycleSeconds:10, unlockAt:50 },
+  { id:'workshop', name:'Workshop', pluralName:'Workshops', actionVerb:'Convene', description:'A small group. A whiteboard. A marker that works.', baseCost:12000, costMultiplier:1.15, baseIdeasPerCycle:60, baseCycleSeconds:20, unlockAt:250 },
+  { id:'newsletter', name:'Newsletter', pluralName:'Newsletters', actionVerb:'Publish', description:'One voice. Many strangers. Something stirs.', baseCost:130000, costMultiplier:1.15, baseIdeasPerCycle:200, baseCycleSeconds:120, unlockAt:1000 },
+  { id:'following', name:'Following', pluralName:'Followings', actionVerb:'Cultivate', description:'People seek it out. You didn\'t ask them to.', baseCost:1400000, costMultiplier:1.15, baseIdeasPerCycle:700, baseCycleSeconds:240, unlockAt:5000 },
+  { id:'chapter', name:'Chapter', pluralName:'Chapters', actionVerb:'Establish', description:'The idea has a room. And a schedule.', baseCost:20000000, costMultiplier:1.15, baseIdeasPerCycle:2500, baseCycleSeconds:480, unlockAt:25000 },
+  { id:'institution', name:'Institution', pluralName:'Institutions', actionVerb:'Incorporate', description:'A building. A budget. A logo. The idea is serious now.', baseCost:330000000, costMultiplier:1.15, baseIdeasPerCycle:10000, baseCycleSeconds:960, unlockAt:100000 },
+  { id:'movement', name:'Movement', pluralName:'Movements', actionVerb:'Launch', description:'The idea has a name that isn\'t yours anymore.', baseCost:5000000000, costMultiplier:1.15, baseIdeasPerCycle:50000, baseCycleSeconds:1920, unlockAt:1000000 },
+  { id:'paradigm', name:'Paradigm', pluralName:'Paradigms', actionVerb:'Establish', description:'The idea is now what everyone assumes.', baseCost:90000000000, costMultiplier:1.15, baseIdeasPerCycle:250000, baseCycleSeconds:3840, unlockAt:10000000 }
+];
+
+const upgradeDefs = [
+  // Global — idea count thresholds
+  { id:'beginners_mind', name:'Beginner\'s Mind', description:'Not knowing helped, briefly.', cost:300, unlockAt:25, effectType:'all_generators_speed_multiply', effectValue:1.5 },
+  { id:'coffee', name:'Coffee', description:'The drug of intellectual civilization.', cost:1200, unlockAt:75, effectType:'all_generators_speed_multiply', effectValue:1.5 },
+  { id:'founding_document', name:'The Founding Document', description:'Manifesto, charter, scripture, pitch deck. Same document.', cost:8000, unlockAt:200, effectType:'all_generators_multiply', effectValue:1.5 },
+  { id:'the_invoice', name:'The Invoice', description:'Ideas acquired line items.', cost:12000, unlockAt:250, effectType:'money_per_idea_multiply', effectValue:2 },
+  { id:'first_follower', name:'First Follower', description:'The loneliest number. Then two.', cost:25000, unlockAt:500, effectType:'money_per_idea_multiply', effectValue:2 },
+  { id:'the_patron', name:'The Patron', description:'Someone believed in it. Early.', cost:75000, unlockAt:750, effectType:'all_generators_multiply', effectValue:2 },
+  { id:'the_inner_circle', name:'The Inner Circle', description:'Trust speeds everything up.', cost:450000, unlockAt:1500, effectType:'all_generators_speed_multiply', effectValue:2 },
+  { id:'the_waiting_list', name:'The Waiting List', description:'Demand exceeds supply. Always a good sign.', cost:1000000, unlockAt:2500, effectType:'all_generators_multiply', effectValue:1.25 },
+  { id:'the_conversion_event', name:'The Conversion Event', description:'A launch, a revival, a publication. Attendance was noted.', cost:2200000, unlockAt:4000, effectType:'all_generators_multiply', effectValue:2 },
+  { id:'ritual_practice', name:'Ritual Practice', description:'Standups, services, seminars. Same meeting.', cost:5000000, unlockAt:10000, effectType:'all_generators_speed_multiply', effectValue:2 },
+  { id:'the_canonical_text', name:'The Canonical Text', description:'It gets cited. Endlessly.', cost:9000000, unlockAt:12000, effectType:'all_generators_speed_multiply', effectValue:2 },
+  { id:'the_diagram', name:'The Diagram', description:'The idea became a picture. Comprehension doubled.', cost:65000000, unlockAt:50000, effectType:'all_generators_multiply', effectValue:2 },
+  { id:'borrowed_legitimacy', name:'Borrowed Legitimacy', description:'An endorsement from someone already trusted.', cost:250000000, unlockAt:100000, effectType:'all_generators_multiply', effectValue:1.5 },
+  { id:'the_retreat', name:'The Retreat', description:'Off-site. Output triples. Nobody questions it.', cost:350000000, unlockAt:250000, effectType:'all_generators_speed_multiply', effectValue:2 },
+  { id:'the_index', name:'The Index', description:'The idea became findable. Findable became valuable.', cost:3000000000, unlockAt:1000000, effectType:'money_per_idea_multiply', effectValue:3 },
+  { id:'policy', name:'Policy', description:'The idea became legislation.', cost:50000000000, unlockAt:10000000, effectType:'all_generators_speed_multiply', effectValue:3 },
+  // Global — generator count thresholds
+  { id:'systematic_thinking', name:'Systematic Thinking', description:'Pattern recognition sets in.', cost:850000, unlockCondition:{ generatorId:'conversation', owned:20 }, effectType:'all_generators_speed_multiply', effectValue:1.5 },
+  { id:'network_effects', name:'Network Effects', description:'The connections outvalue the nodes.', cost:12500000, unlockCondition:{ generatorId:'chapter', owned:20 }, effectType:'all_generators_multiply', effectValue:2 },
+  { id:'distributed_authority', name:'Distributed Authority', description:'The centre is everywhere now.', cost:18000000000, unlockCondition:{ generatorId:'paradigm', owned:10 }, effectType:'all_generators_speed_multiply', effectValue:2 },
+  // Shower Thought
+  { id:'morning_routine', name:'Morning Routine', description:'The shower is now scheduled.', cost:300, unlockCondition:{ generatorId:'shower_thought', owned:2 }, effectType:'automate_generator', targetGeneratorId:'shower_thought' },
+  { id:'wet_floor_sign', name:'The Wet Floor Sign', description:'Hazardous. Generative.', cost:1000, unlockCondition:{ generatorId:'shower_thought', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'shower_thought', effectValue:2 },
+  { id:'longer_showers', name:'Longer Showers', description:'Water bill increases. Output doubles.', cost:2500, unlockCondition:{ generatorId:'shower_thought', owned:15 }, effectType:'generator_speed_multiply', targetGeneratorId:'shower_thought', effectValue:2 },
+  // Notebook
+  { id:'daily_pages', name:'Daily Pages', description:'The notebook opens itself at 6am.', cost:1200, unlockCondition:{ generatorId:'notebook', owned:2 }, effectType:'automate_generator', targetGeneratorId:'notebook' },
+  { id:'margins', name:'Margins', description:'More surface area for the overflow.', cost:10000, unlockCondition:{ generatorId:'notebook', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'notebook', effectValue:2 },
+  { id:'shorthand', name:'Shorthand', description:'The pen catches up with the thought.', cost:18000, unlockCondition:{ generatorId:'notebook', owned:15 }, effectType:'generator_speed_multiply', targetGeneratorId:'notebook', effectValue:2 },
+  // Conversation
+  { id:'standing_meeting', name:'Standing Meeting', description:'Nobody enjoys it. It works.', cost:8000, unlockCondition:{ generatorId:'conversation', owned:2 }, effectType:'automate_generator', targetGeneratorId:'conversation' },
+  { id:'active_listening', name:'Active Listening', description:'One person actually hears the other.', cost:50000, unlockCondition:{ generatorId:'conversation', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'conversation', effectValue:2 },
+  { id:'cutting_to_the_point', name:'Cutting to the Point', description:'Someone does it. Uncharacteristically.', cost:90000, unlockCondition:{ generatorId:'conversation', owned:15 }, effectType:'generator_speed_multiply', targetGeneratorId:'conversation', effectValue:2 },
+  // Workshop
+  { id:'regular_slot', name:'The Regular Slot', description:'Tuesday afternoons. Non-negotiable.', cost:45000, unlockCondition:{ generatorId:'workshop', owned:2 }, effectType:'automate_generator', targetGeneratorId:'workshop' },
+  { id:'good_markers', name:'The Good Markers', description:'The whiteboard becomes legible.', cost:250000, unlockCondition:{ generatorId:'workshop', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'workshop', effectValue:2 },
+  { id:'pre_read', name:'Pre-Read', description:'People actually did it this time.', cost:500000, unlockCondition:{ generatorId:'workshop', owned:15 }, effectType:'generator_speed_multiply', targetGeneratorId:'workshop', effectValue:2 },
+  // Newsletter
+  { id:'editorial_calendar', name:'The Editorial Calendar', description:'Spontaneity is now a system.', cost:220000, unlockCondition:{ generatorId:'newsletter', owned:2 }, effectType:'automate_generator', targetGeneratorId:'newsletter' },
+  { id:'subject_line', name:'The Subject Line', description:'Opens doubled overnight.', cost:500000, unlockCondition:{ generatorId:'newsletter', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'newsletter', effectValue:2 },
+  { id:'templates', name:'Templates', description:'The format is solved. The ideas can begin.', cost:1600000, unlockCondition:{ generatorId:'newsletter', owned:15 }, effectType:'generator_speed_multiply', targetGeneratorId:'newsletter', effectValue:2 },
+  // Following
+  { id:'the_algorithm', name:'The Algorithm', description:'It promotes itself now.', cost:900000, unlockCondition:{ generatorId:'following', owned:2 }, effectType:'automate_generator', targetGeneratorId:'following' },
+  { id:'word_of_mouth', name:'Word of Mouth', description:'The idea spreads without effort.', cost:2500000, unlockCondition:{ generatorId:'following', owned:5 }, effectType:'generator_multiply', targetGeneratorId:'following', effectValue:2 },
+  { id:'the_notification', name:'The Notification', description:'Everyone knows immediately.', cost:7000000, unlockCondition:{ generatorId:'following', owned:10 }, effectType:'generator_speed_multiply', targetGeneratorId:'following', effectValue:2 },
+  // Chapter
+  { id:'the_charter', name:'The Charter', description:'The chapter runs without you.', cost:4500000, unlockCondition:{ generatorId:'chapter', owned:2 }, effectType:'automate_generator', targetGeneratorId:'chapter' },
+  { id:'cross_chapter', name:'Cross-Chapter Communication', description:'Nodes begin talking to each other.', cost:25000000, unlockCondition:{ generatorId:'chapter', owned:5 }, effectType:'generator_multiply', targetGeneratorId:'chapter', effectValue:2 },
+  { id:'shared_calendar', name:'The Shared Calendar', description:'Scheduling friction removed.', cost:50000000, unlockCondition:{ generatorId:'chapter', owned:10 }, effectType:'generator_speed_multiply', targetGeneratorId:'chapter', effectValue:2 },
+  // Institution
+  { id:'the_board', name:'The Board', description:'Delegation achieved. Briefly.', cost:18000000, unlockCondition:{ generatorId:'institution', owned:2 }, effectType:'automate_generator', targetGeneratorId:'institution' },
+  { id:'endowment', name:'Endowment', description:'The money outlasts the idea.', cost:100000000, unlockCondition:{ generatorId:'institution', owned:5 }, effectType:'generator_multiply', targetGeneratorId:'institution', effectValue:2 },
+  { id:'process_improvement', name:'Process Improvement', description:'The form has fewer fields.', cost:220000000, unlockCondition:{ generatorId:'institution', owned:10 }, effectType:'generator_speed_multiply', targetGeneratorId:'institution', effectValue:2 },
+  // Movement
+  { id:'the_doctrine', name:'The Doctrine', description:'The movement knows what it believes.', cost:150000000, unlockCondition:{ generatorId:'movement', owned:1 }, effectType:'automate_generator', targetGeneratorId:'movement' },
+  { id:'the_schism', name:'The Schism', description:'Disagreement generates two followers per one.', cost:1000000000, unlockCondition:{ generatorId:'movement', owned:1 }, effectType:'generator_multiply', targetGeneratorId:'movement', effectValue:2 },
+  { id:'the_talking_point', name:'The Talking Point', description:'One sentence. Repeatable. Scalable.', cost:2500000000, unlockCondition:{ generatorId:'movement', owned:3 }, effectType:'generator_speed_multiply', targetGeneratorId:'movement', effectValue:2 },
+  // Paradigm
+  { id:'common_knowledge', name:'Common Knowledge', description:'No one remembers who started it.', cost:1200000000, unlockCondition:{ generatorId:'paradigm', owned:1 }, effectType:'automate_generator', targetGeneratorId:'paradigm' },
+  { id:'retrospective_inevitability', name:'Retrospective Inevitability', description:'Everyone knew it all along.', cost:10000000000, unlockCondition:{ generatorId:'paradigm', owned:1 }, effectType:'generator_multiply', targetGeneratorId:'paradigm', effectValue:2 },
+  { id:'peer_review', name:'Peer Review', description:'Acceleration via approval.', cost:25000000000, unlockCondition:{ generatorId:'paradigm', owned:3 }, effectType:'generator_speed_multiply', targetGeneratorId:'paradigm', effectValue:2 }
+];
+
+const ideaMilestones = [
+  { pop:10, text:'10 ideas. A pattern is forming.' },
+  { pop:100, text:'100 ideas. The notebook is filling up.' },
+  { pop:1000, text:'1,000 ideas. Someone else mentioned it first.' },
+  { pop:10000, text:'10,000 ideas. Attribution became complicated.' },
+  { pop:100000, text:'100,000 ideas. The original is unrecognizable. Better.' },
+  { pop:1000000, text:'1,000,000 ideas. It\'s in the water now.' },
+  { pop:10000000, text:'10,000,000 ideas. Policy was affected.' }
+];
+
+function createInitialState() {
+  const generators = {};
+  generatorDefs.forEach(def => {
+    generators[def.id] = { owned: def.id === 'shower_thought' ? 1 : 0, progress:0, isRunning:false, automated:false, multiplier:1, speedMultiplier:1, flashed:false };
+  });
+  return {
+    ideas: 0,
+    money: 0,
+    moneyPerIdea: 1,
+    globalMoneyMultiplier: 1,
+    globalGeneratorMultiplier: 1,
+    globalSpeedMultiplier: 1,
+    autoClicksPerSecond: 0,
+    buyMode: 1,
+    generators,
+    purchasedUpgrades: [],
+    chronicle: [],
+    seenIdeaMilestones: [],
+    firstIdeaLogged: false,
+    lastSavedAt: Date.now()
+  };
+}
+
+let state = createInitialState();
+let lastTick = Date.now();
+let gameSeconds = 0;
+let renderCounter = 0;
+
+function formatNumber(value, decimals = 1) {
+  if (!Number.isFinite(value)) return '0';
+  const sign = value < 0 ? '-' : '';
+  let n = Math.abs(value);
+  if (n < 1000) {
+    const places = n < 10 && n % 1 !== 0 ? 2 : n % 1 !== 0 ? decimals : 0;
+    return sign + n.toLocaleString(undefined, { minimumFractionDigits: places, maximumFractionDigits: places });
+  }
+  let tier = Math.floor(Math.log10(n) / 3);
+  tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
+  const scaled = n / Math.pow(1000, tier);
+  return sign + scaled.toFixed(scaled >= 100 ? 0 : decimals) + NUMBER_SUFFIXES[tier];
+}
+function money(value) { return '$' + formatNumber(value); }
+function escAttr(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function formatWholeNumber(value) {
+  if (!Number.isFinite(value)) return '0';
+  const sign = value < 0 ? '-' : '';
+  let n = Math.floor(Math.abs(value));
+  if (n < 100000) return sign + n.toLocaleString();
+  let tier = Math.floor(Math.log10(n) / 3);
+  tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
+  const scaled = n / Math.pow(1000, tier);
+  return sign + scaled.toFixed(scaled >= 100 ? 0 : 2) + NUMBER_SUFFIXES[tier];
+}
+function formatHeaderNumber(value) {
+  if (!Number.isFinite(value)) return '0.00';
+  const sign = value < 0 ? '-' : '';
+  let n = Math.abs(value);
+  if (n < 100000) {
+    return sign + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  let tier = Math.floor(Math.log10(n) / 3);
+  tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
+  const scaled = n / Math.pow(1000, tier);
+  return sign + scaled.toFixed(3) + NUMBER_SUFFIXES[tier];
+}
+function headerMoney(value) { return '$' + formatHeaderNumber(value); }
+function formatTime(seconds) {
+  seconds = Math.max(0, seconds);
+  if (seconds < 60 && seconds % 1 !== 0) return `00:${seconds.toFixed(1).padStart(4, '0')}`;
+  seconds = Math.floor(seconds);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function generatorDef(id) { return generatorDefs.find(g => g.id === id); }
+function getMoneyPerSecond(s = state) {
+  return s.ideas * s.moneyPerIdea * (s.globalGeneratorMultiplier || 1) * s.globalMoneyMultiplier;
+}
+function getMilestoneMultiplier(owned) {
+  return GENERATOR_MILESTONES.reduce((m, milestone) => owned >= milestone.count ? m * milestone.multiplier : m, 1);
+}
+function getNextMilestone(owned) {
+  return GENERATOR_MILESTONES.find(m => owned < m.count) || null;
+}
+function getGeneratorCost(def, genState, buyAmount = 1) {
+  let total = 0;
+  for (let i = 0; i < buyAmount; i++) {
+    total += def.baseCost * Math.pow(def.costMultiplier, genState.owned + i);
+  }
+  return total;
+}
+function getBuyAmount(def, genState) {
+  if (state.buyMode !== 'max') return state.buyMode;
+  let amount = 0;
+  let total = 0;
+  while (amount < 10000) {
+    const next = def.baseCost * Math.pow(def.costMultiplier, genState.owned + amount);
+    if (total + next > state.money) break;
+    total += next;
+    amount++;
+  }
+  return amount;
+}
+function getGeneratorIdeasPerCycle(def, genState, s = state) {
+  return def.baseIdeasPerCycle * genState.owned * (genState.multiplier || 1) * (s.globalGeneratorMultiplier || 1) * getMilestoneMultiplier(genState.owned);
+}
+function getGeneratorCycleSeconds(def, genState, s = state) {
+  return def.baseCycleSeconds / ((genState.speedMultiplier || 1) * (s.globalSpeedMultiplier || 1));
+}
+function applyGeneratorSpeed(def, genState, multiplier) {
+  const oldCycle = getGeneratorCycleSeconds(def, genState);
+  const oldPercent = oldCycle > 0 ? genState.progress / oldCycle : 0;
+  genState.speedMultiplier = (genState.speedMultiplier || 1) * multiplier;
+  const newCycle = getGeneratorCycleSeconds(def, genState);
+  genState.progress = Math.min(newCycle * oldPercent, newCycle);
+}
+function applyGlobalGeneratorSpeed(multiplier) {
+  const progressShares = generatorDefs.map(def => {
+    const gen = state.generators[def.id];
+    const oldCycle = getGeneratorCycleSeconds(def, gen);
+    return { def, gen, percent: oldCycle > 0 ? gen.progress / oldCycle : 0 };
+  });
+  state.globalSpeedMultiplier = (state.globalSpeedMultiplier || 1) * multiplier;
+  progressShares.forEach(item => {
+    const newCycle = getGeneratorCycleSeconds(item.def, item.gen);
+    item.gen.progress = Math.min(newCycle * item.percent, newCycle);
+  });
+}
+function isGeneratorActive(genState) {
+  return genState.owned > 0 && (genState.automated || genState.isRunning);
+}
+function getGeneratorIdeaRate(def, genState, s = state) {
+  if (!isGeneratorActive(genState)) return 0;
+  return getGeneratorIdeasPerCycle(def, genState, s) / getGeneratorCycleSeconds(def, genState, s);
+}
+function getTotalIdeaRate(s = state) {
+  return generatorDefs.reduce((sum, def) => sum + getGeneratorIdeaRate(def, s.generators[def.id], s), 0);
+}
+function getOfflineIdeaRate(s = state) {
+  return generatorDefs.reduce((sum, def) => {
+    const gen = s.generators[def.id];
+    if (!gen || !gen.automated || gen.owned <= 0) return sum;
+    return sum + getGeneratorIdeasPerCycle(def, gen, s) / getGeneratorCycleSeconds(def, gen, s);
+  }, 0);
+}
+function canAfford(cost) { return state.money >= cost; }
+function log(text) {
+  const m = String(Math.floor(gameSeconds / 60)).padStart(2,'0');
+  const s = String(Math.floor(gameSeconds % 60)).padStart(2,'0');
+  state.chronicle.unshift({ t:`${m}:${s}`, text });
+  if (state.chronicle.length > 80) state.chronicle.pop();
+}
+function bump(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+function floatText(parentId, text) {
+  const parent = document.getElementById(parentId);
+  if (!parent) return;
+  const el = document.createElement('span');
+  el.className = 'float';
+  el.textContent = text;
+  parent.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function addIdeas(amount) {
+  if (amount <= 0) return;
+  state.ideas += amount;
+  bump('ideas-display');
+  checkUnlockLogs();
+}
+function buyGenerator(id) {
+  const def = generatorDef(id);
+  const gen = state.generators[id];
+  const amount = getBuyAmount(def, gen);
+  const cost = getGeneratorCost(def, gen, amount);
+  if (!amount || !canAfford(cost)) return;
+  const oldOwned = gen.owned;
+  state.money -= cost;
+  gen.owned += amount;
+  if (oldOwned === 0) log(`The first ${def.name} took shape.`);
+  checkGeneratorMilestones(def, oldOwned, gen.owned);
+  renderAll();
+}
+function startGenerator(id) {
+  const def = generatorDef(id);
+  const gen = state.generators[id];
+  if (!gen || gen.automated || gen.isRunning) return;
+  if (gen.owned === 0) {
+    const cost = getGeneratorCost(def, gen, 1);
+    if (!canAfford(cost)) return;
+    state.money -= cost;
+    gen.owned = 1;
+    log(`The first ${def.name} took shape.`);
+    checkGeneratorMilestones(def, 0, 1);
+  }
+  gen.isRunning = true;
+  gen.runningLabel = THINKING_LABELS[Math.floor(Math.random() * THINKING_LABELS.length)];
+  renderAll();
+}
+function buyUpgrade(id) {
+  const upg = upgradeDefs.find(u => u.id === id);
+  if (!upg || state.purchasedUpgrades.includes(id) || !canAfford(upg.cost) || !isUpgradeUnlocked(upg)) return;
+  state.money -= upg.cost;
+  state.purchasedUpgrades.push(id);
+  applyUpgrade(upg);
+  log(`${upg.name} acquired.`);
+  renderAll();
+}
+function applyUpgrade(upg) {
+  const gen = upg.targetGeneratorId ? state.generators[upg.targetGeneratorId] : null;
+  if (upg.effectType === 'money_per_idea_multiply') state.globalMoneyMultiplier *= upg.effectValue;
+  if (upg.effectType === 'generator_multiply' && gen) gen.multiplier *= upg.effectValue;
+  if (upg.effectType === 'all_generators_multiply') state.globalGeneratorMultiplier = (state.globalGeneratorMultiplier || 1) * upg.effectValue;
+  if (upg.effectType === 'generator_speed_multiply' && gen) {
+    applyGeneratorSpeed(generatorDef(upg.targetGeneratorId), gen, upg.effectValue);
+  }
+  if (upg.effectType === 'all_generators_speed_multiply') {
+    applyGlobalGeneratorSpeed(upg.effectValue);
+  }
+  if (upg.effectType === 'automate_generator' && gen) {
+    gen.automated = true;
+    gen.isRunning = true;
+    log(`${generatorDef(upg.targetGeneratorId).pluralName} now run automatically.`);
+  }
+  if (upg.effectType === 'auto_clicks_per_second_add') state.autoClicksPerSecond += upg.effectValue;
+}
+function isUpgradeUnlocked(upg) {
+  if (state.purchasedUpgrades.includes(upg.id)) return false;
+  if (upg.effectType === 'automate_generator' && state.generators[upg.targetGeneratorId]?.automated) return false;
+  if (upg.unlockAt && state.ideas < upg.unlockAt) return false;
+  if (upg.unlockCondition) {
+    const gen = state.generators[upg.unlockCondition.generatorId];
+    if (!gen || gen.owned < upg.unlockCondition.owned) return false;
+  }
+  return true;
+}
+function setBuyMode(mode) {
+  state.buyMode = mode;
+  renderAll();
+}
+
+function updateMoney(delta) {
+  const before = state.money;
+  state.money += getMoneyPerSecond() * delta;
+  if (Math.floor(before) !== Math.floor(state.money)) bump('money-display');
+}
+function updateGenerators(delta) {
+  generatorDefs.forEach(def => {
+    const gen = state.generators[def.id];
+    if (gen.owned <= 0 || (!gen.automated && !gen.isRunning)) return;
+    const cycle = getGeneratorCycleSeconds(def, gen);
+    gen.progress += delta;
+    if (gen.progress >= cycle) {
+      const cycles = Math.floor(gen.progress / cycle);
+      const added = cycles * getGeneratorIdeasPerCycle(def, gen);
+      state.ideas += added;
+      bump('ideas-display');
+      if (!gen.automated) {
+        gen.flashed = true;
+        setTimeout(() => { gen.flashed = false; renderGenerators(); }, 430);
+      }
+      if (gen.automated) {
+        gen.progress = gen.progress % cycle;
+        gen.runningLabel = THINKING_LABELS[Math.floor(Math.random() * THINKING_LABELS.length)];
+      } else {
+        gen.progress = 0;
+        gen.isRunning = false;
+      }
+    }
+  });
+}
+function checkGeneratorMilestones(def, oldOwned, newOwned) {
+  GENERATOR_MILESTONES.forEach(m => {
+    if (oldOwned < m.count && newOwned >= m.count) {
+      log(`${def.name} reached ${m.count} owned. Output filed at x${m.multiplier}.`);
+    }
+  });
+}
+function checkUnlockLogs() {
+  ideaMilestones.forEach(m => {
+    if (state.ideas >= m.pop && !state.seenIdeaMilestones.includes(m.pop)) {
+      state.seenIdeaMilestones.push(m.pop);
+      log(m.text);
+    }
+  });
+  const movement = state.generators.movement;
+  if (movement.owned > 0 && !state.seenIdeaMilestones.includes('first_movement')) {
+    state.seenIdeaMilestones.push('first_movement');
+    log('The first Movement launched. The idea had followers it hadn\'t met.');
+  }
+  const paradigm = state.generators.paradigm;
+  if (paradigm.owned > 0 && !state.seenIdeaMilestones.includes('first_paradigm')) {
+    state.seenIdeaMilestones.push('first_paradigm');
+    log('The first Paradigm established. The idea was now assumed.');
+  }
+}
+function tick() {
+  const now = Date.now();
+  const delta = Math.min((now - lastTick) / 1000, 0.25);
+  lastTick = now;
+  gameSeconds += delta;
+  updateMoney(delta);
+  updateGenerators(delta);
+  checkUnlockLogs();
+  renderCounter++;
+  if (renderCounter % 2 === 0) renderTopStats();
+  if (renderCounter % 8 === 0) {
+    renderLeftStats();
+    renderGenerators();
+  }
+  if (renderCounter % 20 === 0) renderUpgrades();
+  if (renderCounter % 20 === 0) updateClock();
+  if (renderCounter % 100 === 0) saveGame(false);
+}
+
+function renderAll() {
+  renderTopStats();
+  renderLeftStats();
+  renderBuyModes();
+  renderGenerators();
+  renderUpgrades();
+}
+function renderTopStats() {
+  document.getElementById('ideas-display').textContent = formatWholeNumber(state.ideas) + ' ideas';
+  document.getElementById('money-display').textContent = headerMoney(state.money);
+  document.getElementById('idea-rate-display').textContent = '+' + formatHeaderNumber(getTotalIdeaRate()) + ' ideas/sec';
+  document.getElementById('income-display').textContent = '+' + headerMoney(getMoneyPerSecond()) + '/sec';
+  renderFormulaBar();
+}
+function renderFormulaBar() {
+  const genUpgrades = state.purchasedUpgrades
+    .map(id => upgradeDefs.find(u => u.id === id))
+    .filter(u => u && u.effectType === 'all_generators_multiply');
+  const moneyUpgrades = state.purchasedUpgrades
+    .map(id => upgradeDefs.find(u => u.id === id))
+    .filter(u => u && u.effectType === 'money_per_idea_multiply');
+  const genMult = state.globalGeneratorMultiplier || 1;
+  const moneyRate = state.moneyPerIdea * state.globalMoneyMultiplier;
+  const genBadges = genUpgrades.map(u => `<span class="badge">x${formatNumber(u.effectValue)} ${u.name}</span>`).join(' ');
+  const moneyBadges = moneyUpgrades.map(u => `<span class="badge">x${formatNumber(u.effectValue)} ${u.name}</span>`).join(' ');
+  document.getElementById('formula-bar').innerHTML =
+    `<div class="formula-row">` +
+      `<span class="formula-part">${formatNumber(genMult)} ${genMult === 1 ? 'idea' : 'ideas'}</span>` +
+      (genBadges ? ` ${genBadges}` : '') +
+      `<span class="formula-op">=</span>` +
+      `<span class="formula-part">${headerMoney(moneyRate)}/sec</span>` +
+      (moneyBadges ? ` ${moneyBadges}` : '') +
+    `</div>` +
+    `<div class="formula-tagline">Have ideas - make money.</div>`;
+}
+function renderLeftStats() {
+  const purchased = state.purchasedUpgrades
+    .map(id => upgradeDefs.find(upg => upg.id === id))
+    .filter(Boolean)
+    .reverse()
+    .map(upg => `<div class="mini-item"><span>${upg.name}</span><span class="mini-help" data-tip="${escAttr(`${describeUpgradeEffect(upg)}. ${upg.description}`)}">?</span></div>`)
+    .join('');
+  document.getElementById('purchased-list').innerHTML = purchased || '<div class="mini-note">No upgrades purchased.</div>';
+
+  document.getElementById('goal-list').innerHTML = buildGoals()
+    .slice(0, 6)
+    .map(goal => `<div class="mini-item"><span>${goal.label}</span><span class="mini-value">${goal.value}</span></div>`)
+    .join('');
+}
+function buildGoals() {
+  const goals = [];
+  const unlockedUpgrades = upgradeDefs
+    .filter(isUpgradeUnlocked)
+    .sort((a, b) => a.cost - b.cost);
+  const affordableUpgrade = unlockedUpgrades.find(upg => upg.cost <= state.money);
+  if (affordableUpgrade) {
+    goals.push({ label: `Buy ${affordableUpgrade.name}`, value: money(affordableUpgrade.cost) });
+  }
+  const nextUpgrade = unlockedUpgrades.find(upg => upg.cost > state.money);
+  if (nextUpgrade) {
+    goals.push({ label: `Afford ${nextUpgrade.name}`, value: money(nextUpgrade.cost) });
+  }
+
+  const nextAutomation = upgradeDefs.find(upg => {
+    if (upg.effectType !== 'automate_generator') return false;
+    if (state.purchasedUpgrades.includes(upg.id)) return false;
+    if (state.generators[upg.targetGeneratorId]?.automated) return false;
+    if (upg.unlockCondition) {
+      const gen = state.generators[upg.unlockCondition.generatorId];
+      return gen && gen.owned < upg.unlockCondition.owned && gen.owned > 0;
+    }
+    return upg.unlockAt && state.ideas < upg.unlockAt;
+  });
+  if (nextAutomation) {
+    const target = generatorDef(nextAutomation.targetGeneratorId);
+    if (nextAutomation.unlockCondition) {
+      const gen = state.generators[nextAutomation.unlockCondition.generatorId];
+      goals.push({
+        label: `Automate ${target.pluralName}`,
+        value: `${formatNumber(gen.owned)} / ${nextAutomation.unlockCondition.owned}`
+      });
+    } else {
+      goals.push({
+        label: `Automate ${target.pluralName}`,
+        value: `${formatNumber(state.ideas)} / ${formatNumber(nextAutomation.unlockAt)}`
+      });
+    }
+  }
+
+  const nextGenerator = generatorDefs.find(def => state.ideas < def.unlockAt);
+  if (nextGenerator) {
+    goals.push({
+      label: `Unlock ${nextGenerator.name}`,
+      value: `${formatNumber(state.ideas)} / ${formatNumber(nextGenerator.unlockAt)}`
+    });
+  }
+
+  generatorDefs
+    .map(def => ({ def, gen: state.generators[def.id], next: getNextMilestone(state.generators[def.id].owned) }))
+    .filter(item => item.gen.owned > 0 && item.next)
+    .sort((a, b) => (a.next.count - a.gen.owned) - (b.next.count - b.gen.owned))
+    .slice(0, 2)
+    .forEach(item => {
+      goals.push({
+        label: `${item.def.name} milestone`,
+        value: `${formatNumber(item.gen.owned)} / ${item.next.count}`
+      });
+    });
+
+  return goals.length ? goals : [{ label:'No immediate goal', value:'OK' }];
+}
+function describeUpgradeEffect(upg) {
+  const target = upg.targetGeneratorId ? generatorDef(upg.targetGeneratorId) : null;
+  if (upg.effectType === 'auto_clicks_per_second_add') return `Passive ideas: +${formatNumber(upg.effectValue, 2)}/sec`;
+  if (upg.effectType === 'automate_generator' && target) return `${target.pluralName}: automatic cycles`;
+  if (upg.effectType === 'generator_multiply' && target) return `${target.pluralName} output: x${formatNumber(upg.effectValue)}`;
+  if (upg.effectType === 'all_generators_multiply') return `All idea rates: x${formatNumber(upg.effectValue, 2)}`;
+  if (upg.effectType === 'generator_speed_multiply' && target) return `${target.pluralName} cycle speed: x${formatNumber(upg.effectValue)} faster`;
+  if (upg.effectType === 'all_generators_speed_multiply') return `All cycle speeds: x${formatNumber(upg.effectValue)} faster`;
+  if (upg.effectType === 'money_per_idea_multiply') return `Income per idea: x${formatNumber(upg.effectValue)}`;
+  return 'Effect: filed for implementation';
+}
+function renderBuyModes() {
+  document.getElementById('buy-mode-label').textContent = state.buyMode === 'max' ? 'Adding Max' : `Adding ${state.buyMode}x`;
+  document.getElementById('buy-mode-buttons').innerHTML = BUY_MODES.map(mode => (
+    `<button class="btn ${state.buyMode === mode ? 'active' : ''}" data-buy-mode="${mode}">${mode === 'max' ? 'Max' : mode}</button>`
+  )).join('');
+}
+function renderGenerators() {
+  const FAST_CYCLE_SECONDS = 0.5;
+  const html = generatorDefs.map(def => {
+    const gen = state.generators[def.id];
+    const visible = state.ideas >= def.unlockAt;
+    const preview = !visible && state.ideas >= def.unlockAt * 0.5;
+    if (!visible && !preview) return '';
+    if (preview) {
+      return `<div class="generator-row locked">
+        <div class="gen-icon">${def.name.charAt(0)}</div>
+        <div class="gen-main">
+          <div class="gen-top"><span class="gen-name">${def.name}</span></div>
+          <div class="gen-desc">Unlocks at ${formatNumber(def.unlockAt)} ideas.</div>
+        </div>
+      </div>`;
+    }
+    const cycle = getGeneratorCycleSeconds(def, gen);
+    const rate = getGeneratorIdeaRate(def, gen);
+    const percent = gen.owned > 0 ? Math.min(100, (gen.progress / cycle) * 100) : 0;
+    const fastCycle = cycle <= FAST_CYCLE_SECONDS && gen.automated;
+    const buyAmount = getBuyAmount(def, gen);
+    const cost = buyAmount > 0 ? getGeneratorCost(def, gen, buyAmount) : getGeneratorCost(def, gen, 1);
+    const affordable = canAfford(cost);
+    const nextMilestone = getNextMilestone(gen.owned);
+    const milestoneText = nextMilestone
+      ? `Ownership milestone: ${formatNumber(gen.owned)} / ${nextMilestone.count} owned for x${nextMilestone.multiplier}`
+      : 'Ownership milestones complete';
+    const effectiveSpeed = (gen.speedMultiplier || 1) * (state.globalSpeedMultiplier || 1);
+    const speedText = effectiveSpeed > 1 ? ` <span class="badge">x${formatNumber(effectiveSpeed)} SPEED</span>` : '';
+    const canTrigger = gen.owned > 0 || canAfford(getGeneratorCost(def, gen, 1));
+    const startButton = !gen.automated && !gen.isRunning
+      ? `<button class="btn ${canTrigger ? '' : 'need'}" data-action="start-generator" data-generator-id="${def.id}" ${canTrigger ? '' : 'disabled'}>${def.actionVerb}</button>`
+      : '';
+    const status = gen.automated ? '<span class="badge auto">AUTO</span>' : gen.isRunning ? `<span class="badge">${gen.runningLabel || 'Thinking'}</span>` : '';
+    const outputUpgrades = state.purchasedUpgrades
+      .map(id => upgradeDefs.find(u => u.id === id))
+      .filter(u => u && u.effectType === 'generator_multiply' && u.targetGeneratorId === def.id);
+    const outputBadges = outputUpgrades
+      .map(u => `<span class="badge">×${formatNumber(u.effectValue)} ${u.name}</span>`)
+      .join(' ');
+    return `<div class="generator-row ${gen.flashed ? 'flash' : ''}" id="generator-${def.id}">
+      <div class="gen-icon">${def.name.charAt(0)}</div>
+      <div class="gen-main">
+        <div class="gen-top">
+          <span class="gen-owned-title">${formatNumber(gen.owned)}x <span class="gen-type">${gen.owned === 1 ? def.name : def.pluralName}</span></span>${outputBadges ? ' ' + outputBadges : ''}
+          <span class="owned">${status}</span>
+        </div>
+        <div class="gen-desc">${def.description}</div>
+        <div class="gen-output">
+          <span class="gen-rate">+${formatNumber(rate, 2)} ideas/sec</span>
+          <span>·</span>
+          <span>${formatTime(cycle)} cycle${speedText}</span>
+        </div>
+        <div class="progress-shell ${fastCycle ? 'fast' : ''}"><div class="progress-fill" style="width:${fastCycle ? 100 : percent}%"></div></div>
+          <div class="gen-bottom">
+            <div class="timer">${milestoneText}</div>
+            <div class="gen-actions">
+              ${startButton}
+            <button class="btn ${affordable ? '' : 'need'}" data-action="buy-generator" data-generator-id="${def.id}" ${affordable ? '' : 'disabled'}>Add ${state.buyMode === 'max' ? Math.max(1, buyAmount) : state.buyMode}x<br>${money(cost)}</button>
+            </div>
+          </div>
+        </div>
+    </div>`;
+  }).join('');
+  document.getElementById('generator-list').innerHTML = html || '<div class="empty">No generators visible yet.</div>';
+}
+function renderUpgrades() {
+  const visible = upgradeDefs.filter(isUpgradeUnlocked);
+  document.getElementById('upgrade-list').innerHTML = visible.length ? visible.map(upg => (
+    `<div class="upgrade-card">
+      <div class="upgrade-head">
+        <span class="upgrade-name">${upg.name}</span>
+        <span class="upgrade-cost">${money(upg.cost)}</span>
+      </div>
+      <div class="upgrade-desc">${upg.description}</div>
+      <div class="upgrade-effect">${describeUpgradeEffect(upg)}</div>
+      <button class="btn" data-action="buy-upgrade" data-upgrade-id="${upg.id}" ${canAfford(upg.cost) ? '' : 'disabled'}>Buy Upgrade</button>
+    </div>`
+  )).join('') : '<div class="empty">No upgrades available. Keep generating.</div>';
+}
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clock').textContent = `${h}:${m} ${ap}`;
+}
+
+function serializeState() {
+  return {
+    version: SAVE_VERSION,
+    savedAt: Date.now(),
+    state: {
+      ideas: state.ideas,
+      money: state.money,
+      moneyPerIdea: state.moneyPerIdea,
+      globalMoneyMultiplier: state.globalMoneyMultiplier,
+      globalGeneratorMultiplier: state.globalGeneratorMultiplier,
+      globalSpeedMultiplier: state.globalSpeedMultiplier,
+      autoClicksPerSecond: state.autoClicksPerSecond,
+      buyMode: state.buyMode,
+      generators: state.generators,
+      purchasedUpgrades: state.purchasedUpgrades,
+      chronicle: state.chronicle,
+      seenIdeaMilestones: state.seenIdeaMilestones,
+      firstIdeaLogged: state.firstIdeaLogged
+    }
+  };
+}
+function saveGame(showIndicator) {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(serializeState()));
+    if (showIndicator) {
+      const el = document.getElementById('save-indicator');
+      el.textContent = 'Saved';
+      setTimeout(() => { el.textContent = ''; }, 1400);
+    }
+  } catch (e) {}
+}
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || data.version !== SAVE_VERSION || !data.state) return false;
+    const loaded = data.state;
+    const fresh = createInitialState();
+    const loadedGenerators = loaded.generators || {};
+    state = Object.assign(fresh, loaded, { generators: fresh.generators });
+    generatorDefs.forEach(def => {
+      state.generators[def.id] = Object.assign(fresh.generators[def.id], loadedGenerators[def.id] || {});
+      state.generators[def.id].speedMultiplier = state.generators[def.id].speedMultiplier || 1;
+      state.generators[def.id].flashed = false;
+    });
+    if (state.moneyPerIdea < 1) state.moneyPerIdea = 1;
+    state.globalGeneratorMultiplier = state.globalGeneratorMultiplier || 1;
+    state.globalSpeedMultiplier = state.globalSpeedMultiplier || 1;
+    applyOfflineProgress(data.savedAt || Date.now());
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function applyOfflineProgress(savedAt) {
+  const elapsed = Math.min((Date.now() - savedAt) / 1000, OFFLINE_CAP_SECONDS);
+  if (elapsed < 30) return;
+  const moneyGained = getMoneyPerSecond() * elapsed;
+  const ideasGained = getOfflineIdeaRate() * elapsed;
+  state.money += moneyGained;
+  state.ideas += ideasGained;
+  checkUnlockLogs();
+  showOfflineModal(ideasGained, moneyGained, elapsed);
+}
+function showOfflineModal(ideasGained, moneyGained, elapsed) {
+  document.getElementById('offline-summary').innerHTML =
+    `Elapsed time counted: ${formatTime(elapsed)}<br>` +
+    `+${formatNumber(ideasGained)} ideas<br>` +
+    `+${money(moneyGained)}`;
+  document.getElementById('offline-modal').classList.add('show');
+}
+function closeOfflineModal() {
+  document.getElementById('offline-modal').classList.remove('show');
+}
+function showAboutModal() {
+  document.getElementById('about-modal').classList.add('show');
+}
+function closeAboutModal() {
+  document.getElementById('about-modal').classList.remove('show');
+}
+function resetGame() {
+  document.getElementById('reset-modal').classList.add('show');
+}
+function confirmReset() {
+  closeResetModal();
+  localStorage.removeItem(SAVE_KEY);
+  state = createInitialState();
+  gameSeconds = 0;
+  lastTick = Date.now();
+  log('The first idea arrived.');
+  renderAll();
+}
+function closeResetModal() {
+  document.getElementById('reset-modal').classList.remove('show');
+}
+function bindBoardControls() {
+  document.getElementById('buy-mode-buttons').addEventListener('pointerdown', event => {
+    const button = event.target.closest('button[data-buy-mode]');
+    if (!button) return;
+    event.preventDefault();
+    const mode = button.dataset.buyMode === 'max' ? 'max' : Number(button.dataset.buyMode);
+    setBuyMode(mode);
+  });
+  document.getElementById('generator-list').addEventListener('pointerdown', event => {
+    const button = event.target.closest('button[data-action]');
+    if (!button || button.disabled) return;
+    event.preventDefault();
+    if (button.dataset.action === 'buy-generator') buyGenerator(button.dataset.generatorId);
+    if (button.dataset.action === 'start-generator') startGenerator(button.dataset.generatorId);
+  });
+  document.getElementById('upgrade-list').addEventListener('pointerdown', event => {
+    const button = event.target.closest('button[data-action="buy-upgrade"]');
+    if (!button || button.disabled) return;
+    event.preventDefault();
+    buyUpgrade(button.dataset.upgradeId);
+  });
+}
+function init() {
+  const loaded = loadGame();
+  bindBoardControls();
+  updateClock();
+  renderAll();
+  if (!loaded) {
+    log('The first idea arrived.');
+    showAboutModal();
+  }
+  setInterval(tick, 50);
+}
+init();
+</script>
+</body>
+</html>
