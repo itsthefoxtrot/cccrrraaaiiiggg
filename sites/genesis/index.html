@@ -261,7 +261,7 @@ button, select { font: inherit; color: inherit; }
 .mini-help::after {
   content: attr(data-tip);
   position: absolute;
-  left: 50%;
+  right: 0;
   bottom: calc(100% + 5px);
   z-index: 20;
   width: min(190px, calc(100vw - 32px));
@@ -276,7 +276,6 @@ button, select { font: inherit; color: inherit; }
   line-height: 1.35;
   text-align: left;
   white-space: normal;
-  transform: translateX(-50%);
   opacity: 0;
   pointer-events: none;
 }
@@ -340,29 +339,28 @@ button, select { font: inherit; color: inherit; }
   width: 24px; height: 24px;
   display: grid;
   place-items: center;
-  background: #fff;
-  border: 1px solid #000;
-  font-family: "Courier New", monospace;
-  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
 }
 .gen-main { min-width: 0; }
 .gen-top {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 8px;
 }
 .gen-name { font-size: 13px; font-weight: bold; }
-.gen-owned-title {
+.gen-cycle-inline {
+  color: var(--muted);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+}
+.gen-owned-right {
+  margin-left: auto;
   font-size: 18px;
   font-weight: bold;
   font-family: "Courier New", monospace;
   line-height: 1.1;
-}
-.gen-type {
-  color: var(--muted);
-  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
-  font-size: 12px;
+  white-space: nowrap;
 }
 .owned { color: var(--muted); font-family: "Courier New", monospace; white-space: nowrap; }
 .gen-desc {
@@ -396,7 +394,6 @@ button, select { font: inherit; color: inherit; }
   background:
     repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 4px, transparent 4px 8px),
     var(--green);
-  transition: width 90ms linear;
 }
 .progress-shell.fast .progress-fill {
   width: 100% !important;
@@ -650,6 +647,7 @@ button, select { font: inherit; color: inherit; }
         <p>Genesis is an idle clicker game about the compounding value of ideas. Can your shower thought become the next paradigm shift?</p>
         <p>Now we have AI to execute everything for us, it's the ideas we have that'll make the money. More ideas = more money. The rest is admin.</p>
         <p style="margin-top:16px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a>.</p>
+        <p style="margin-top:4px;color:#777;font-size:10px;">v1.0.5</p>
       </div>
       <button class="btn" onclick="closeAboutModal()">OK</button>
     </div>
@@ -683,6 +681,19 @@ const GENERATOR_MILESTONES = [
   { count: 100, multiplier: 3 },
   { count: 200, multiplier: 5 }
 ];
+
+const GENERATOR_EMOJI = {
+  shower_thought: '🚿',
+  notebook:       '📓',
+  conversation:   '💬',
+  workshop:       '🛠️',
+  newsletter:     '📰',
+  following:      '👥',
+  chapter:        '🏠',
+  institution:    '🏛️',
+  movement:       '✊',
+  paradigm:       '🌐',
+};
 
 const generatorDefs = [
   { id:'shower_thought', name:'Shower Thought', pluralName:'Shower Thoughts', actionVerb:'Have It', description:'The lone spark. You weren\'t even trying.', baseCost:15, costMultiplier:1.15, baseIdeasPerCycle:1, baseCycleSeconds:3, unlockAt:0 },
@@ -1236,7 +1247,7 @@ function renderGenerators() {
     if (!visible && !preview) return '';
     if (preview) {
       return `<div class="generator-row locked">
-        <div class="gen-icon">${def.name.charAt(0)}</div>
+        <div class="gen-icon">${GENERATOR_EMOJI[def.id] || def.name.charAt(0)}</div>
         <div class="gen-main">
           <div class="gen-top"><span class="gen-name">${def.name}</span></div>
           <div class="gen-desc">Unlocks at ${formatNumber(def.unlockAt)} ideas.</div>
@@ -1247,13 +1258,14 @@ function renderGenerators() {
     const rate = getGeneratorIdeaRate(def, gen);
     const percent = gen.owned > 0 ? Math.min(100, (gen.progress / cycle) * 100) : 0;
     const fastCycle = cycle <= FAST_CYCLE_SECONDS && gen.automated;
+    const ideasPerCycle = getGeneratorIdeasPerCycle(def, gen);
     const buyAmount = getBuyAmount(def, gen);
     const cost = buyAmount > 0 ? getGeneratorCost(def, gen, buyAmount) : getGeneratorCost(def, gen, 1);
     const affordable = canAfford(cost);
     const nextMilestone = getNextMilestone(gen.owned);
     const milestoneText = nextMilestone
-      ? `Ownership milestone: ${formatNumber(gen.owned)} / ${nextMilestone.count} owned for x${nextMilestone.multiplier}`
-      : 'Ownership milestones complete';
+      ? `Milestone: ${formatNumber(gen.owned)} / ${nextMilestone.count} for ×${nextMilestone.multiplier} ideas output`
+      : 'All milestones reached';
     const effectiveSpeed = (gen.speedMultiplier || 1) * (state.globalSpeedMultiplier || 1);
     const speedText = effectiveSpeed > 1 ? ` <span class="badge">x${formatNumber(effectiveSpeed)} SPEED</span>` : '';
     const canTrigger = gen.owned > 0 || canAfford(getGeneratorCost(def, gen, 1));
@@ -1264,23 +1276,30 @@ function renderGenerators() {
     const outputUpgrades = state.purchasedUpgrades
       .map(id => upgradeDefs.find(u => u.id === id))
       .filter(u => u && u.effectType === 'generator_multiply' && u.targetGeneratorId === def.id);
-    const outputBadges = outputUpgrades
-      .map(u => `<span class="badge">×${formatNumber(u.effectValue)} ${u.name}</span>`)
-      .join(' ');
+    const milestoneMult = getMilestoneMultiplier(gen.owned);
+    const milestoneBadge = milestoneMult > 1
+      ? `<span class="badge" style="color:var(--green);border-color:var(--green);">×${formatNumber(milestoneMult)} ideas</span>`
+      : '';
+    const outputBadges = [
+      milestoneBadge,
+      ...outputUpgrades.map(u => `<span class="badge">×${formatNumber(u.effectValue)} ${u.name}</span>`)
+    ].filter(Boolean).join(' ');
     return `<div class="generator-row ${gen.flashed ? 'flash' : ''}" id="generator-${def.id}">
-      <div class="gen-icon">${def.name.charAt(0)}</div>
+      <div class="gen-icon">${GENERATOR_EMOJI[def.id] || def.name.charAt(0)}</div>
       <div class="gen-main">
         <div class="gen-top">
-          <span class="gen-owned-title">${formatNumber(gen.owned)}x <span class="gen-type">${gen.owned === 1 ? def.name : def.pluralName}</span></span>${outputBadges ? ' ' + outputBadges : ''}
-          <span class="owned">${status}</span>
+          <span class="gen-name">${gen.owned === 1 ? def.name : def.pluralName}</span>
+          <span class="gen-cycle-inline">+${formatNumber(ideasPerCycle)} ${ideasPerCycle < 2 ? 'idea' : 'ideas'}/cycle</span>
+          <span class="gen-owned-right">${formatNumber(gen.owned)}x</span>
         </div>
+        ${outputBadges ? `<div style="margin:2px 0;">${outputBadges}</div>` : ''}
         <div class="gen-desc">${def.description}</div>
         <div class="gen-output">
           <span class="gen-rate">+${formatNumber(rate, 2)} ideas/sec</span>
           <span>·</span>
-          <span>${formatTime(cycle)} cycle${speedText}</span>
+          <span>${formatTime(cycle)} cycle${speedText}${status ? ' ' + status : ''}</span>
         </div>
-        <div class="progress-shell ${fastCycle ? 'fast' : ''}"><div class="progress-fill" style="width:${fastCycle ? 100 : percent}%"></div></div>
+        <div class="progress-shell ${fastCycle ? 'fast' : ''}"><div id="progress-fill-${def.id}" class="progress-fill" style="width:${fastCycle ? 100 : percent}%"></div></div>
           <div class="gen-bottom">
             <div class="timer">${milestoneText}</div>
             <div class="gen-actions">
@@ -1434,6 +1453,20 @@ function bindBoardControls() {
     buyUpgrade(button.dataset.upgradeId);
   });
 }
+function animateProgressBars() {
+  const elapsed = Math.min((Date.now() - lastTick) / 1000, 0.1);
+  generatorDefs.forEach(def => {
+    const gen = state.generators[def.id];
+    if (!isGeneratorActive(gen)) return;
+    const cycle = getGeneratorCycleSeconds(def, gen);
+    if (cycle <= FAST_CYCLE_SECONDS && gen.automated) return;
+    const fill = document.getElementById('progress-fill-' + def.id);
+    if (!fill) return;
+    fill.style.width = Math.min(100, ((gen.progress + elapsed) / cycle) * 100) + '%';
+  });
+  requestAnimationFrame(animateProgressBars);
+}
+
 function init() {
   const loaded = loadGame();
   bindBoardControls();
@@ -1444,6 +1477,7 @@ function init() {
     showAboutModal();
   }
   setInterval(tick, 50);
+  requestAnimationFrame(animateProgressBars);
 }
 init();
 </script>
