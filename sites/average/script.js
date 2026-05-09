@@ -28,7 +28,8 @@ const MS_PER_HOUR = 60 * 60 * 1000;
 const C_FILLED = [26,  26,  26 ];
 const C_EMPTY  = [232, 232, 232];
 
-let birthDate  = null;
+let birthDate      = null;
+let selectedCountry = 'Global Average';
 let totalHours = 0;
 let cols       = 0;
 let rows       = 0;
@@ -64,10 +65,12 @@ document.getElementById('start').addEventListener('click', () => {
     const dob = new Date(dobVal);
     if (isNaN(dob) || dob >= new Date()) return;
 
-    birthDate  = dob;
-    totalHours = Math.round((LIFE_EXPECTANCY[countrySelect.value] || 73) * 365.2425 * 24);
+    birthDate       = dob;
+    selectedCountry = countrySelect.value;
+    totalHours      = Math.round((LIFE_EXPECTANCY[selectedCountry] || 73) * 365.2425 * 24);
 
     document.getElementById('modal').style.display = 'none';
+    document.getElementById('info-btn').classList.remove('hidden');
 
     const { fullHours } = calcTime();
     if (fullHours >= totalHours) {
@@ -224,14 +227,37 @@ function spawnGrain() {
     for (let i = 0; i < count; i++) {
         const grain  = document.createElement('div');
         grain.className = 'grain';
-        const startY = screenY - h * (1.5 + Math.random() * 2) - 8;
+        const startY = screenY - 80 - Math.random() * 120;
         const dist   = screenY - startY + h * 0.5;
         grain.style.left = (screenX + w * (0.2 + Math.random() * 0.6)) + 'px';
         grain.style.top  = startY + 'px';
         grain.style.setProperty('--dist', dist + 'px');
-        grain.style.setProperty('--dur',  (0.25 + Math.random() * 0.25) + 's');
-        if (i > 0) grain.style.animationDelay = (Math.random() * 0.2) + 's';
+        grain.style.setProperty('--dur',  (0.5 + Math.random() * 0.4) + 's');
+        if (i > 0) grain.style.animationDelay = (Math.random() * 0.3) + 's';
         document.body.appendChild(grain);
-        setTimeout(() => grain.remove(), 700);
+        setTimeout(() => grain.remove(), 1200);
     }
+}
+
+// ── Info modal ────────────────────────────────────────
+
+function openInfo() {
+    const fmt = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const { fullHours } = calcTime();
+    const totalDays   = Math.round(totalHours / 24);
+    const usedDays    = Math.floor(fullHours / 24);
+    const remainDays  = totalDays - usedDays;
+    const pctUsed     = (fullHours / totalHours * 100).toFixed(1);
+    const pctLeft     = (100 - parseFloat(pctUsed)).toFixed(1);
+    const lifespan    = LIFE_EXPECTANCY[selectedCountry] || 73;
+
+    document.getElementById('info-dob').textContent       = fmt(birthDate);
+    document.getElementById('info-country').textContent   = selectedCountry;
+    document.getElementById('info-lifespan').textContent  = lifespan + ' years';
+    document.getElementById('info-today').textContent     = fmt(new Date());
+    document.getElementById('info-total').textContent     = totalDays.toLocaleString() + ' days';
+    document.getElementById('info-used').textContent      = usedDays.toLocaleString() + ' days (' + pctUsed + '%)';
+    document.getElementById('info-remaining').textContent = remainDays.toLocaleString() + ' days (' + pctLeft + '%)';
+
+    document.getElementById('info-modal').style.display = 'flex';
 }

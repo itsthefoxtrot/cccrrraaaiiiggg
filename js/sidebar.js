@@ -1,7 +1,7 @@
 const LAST_UPDATED = '05/2026';
 
 const PROJECTS = [
-  { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/mr-average/index.html' },
+  { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/average/index.html' },
   { title: 'Genesis',                                    slug: null, newTab: true,   path: 'sites/genesis/index.html' },
   { title: 'Pips',                                         slug: 'pips',             path: 'projects/pips/pips.html' },
   { title: 'Tardigotchi',                                slug: 'tardigotchi',      path: 'projects/tardigotchi/tardigotchi.html' },

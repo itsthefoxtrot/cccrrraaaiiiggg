@@ -62,21 +62,118 @@ body {
     100% { transform: translateY(var(--dist, 40px));    opacity: 0; }
 }
 
+/* ── Info button ──────────────────────────────────── */
+
+#info-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    background: var(--win-bg);
+    border-top:    1px solid var(--border-out);
+    border-left:   1px solid var(--border-out);
+    border-bottom: 1px solid var(--border-in);
+    border-right:  1px solid var(--border-in);
+    font-family: inherit;
+    font-size: 10px;
+    font-style: italic;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+#info-btn:active {
+    border-top:    1px solid var(--border-in);
+    border-left:   1px solid var(--border-in);
+    border-bottom: 1px solid var(--border-out);
+    border-right:  1px solid var(--border-out);
+}
+
+/* ── Info modal ───────────────────────────────────── */
+
+#info-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(60, 60, 60, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.info-table td {
+    padding: 3px 0;
+}
+
+.info-table tr:first-child td {
+    padding-top: 10px;
+}
+
+.info-table tr:last-child td {
+    padding-bottom: 10px;
+}
+
+.info-table td:first-child {
+    color: #555;
+    padding-right: 16px;
+    white-space: nowrap;
+}
+
+.info-table td:last-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+
+.info-ok {
+    background: var(--win-bg);
+    border-top:    1px solid var(--border-out);
+    border-left:   1px solid var(--border-out);
+    border-bottom: 1px solid var(--border-in);
+    border-right:  1px solid var(--border-in);
+    outline: 2px solid var(--black);
+    outline-offset: 2px;
+    padding: 4px 20px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 72px;
+}
+
+.info-ok:active {
+    border-top:    1px solid var(--border-in);
+    border-left:   1px solid var(--border-in);
+    border-bottom: 1px solid var(--border-out);
+    border-right:  1px solid var(--border-out);
+}
+
 /* ── Borrowed time ────────────────────────────────── */
 
 #borrowed {
     width: 100vw;
     height: 100vh;
-    background: var(--win-bg);
-    border: 1px solid var(--black);
+    background: #000;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 #borrowed p {
+    color: #fff;
     font-size: 13px;
-    font-style: italic;
+    font-style: normal;
 }
 
 /* ── Modal / Dialog ───────────────────────────────── */

@@ -9,31 +9,30 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; overflow: hidden; }
 :root {
-  --paper: #efeee8;
-  --panel: #d8d5ce;
-  --panel-dark: #b8b4aa;
-  --ink: #111;
-  --muted: #5f5f5f;
-  --green: #087a32;
-  --green-soft: #dff3e6;
-  --red: #9d1b1b;
-  --blue: #152d85;
+  --paper: #ffffff;
+  --panel: #c0c0c0;
+  --panel-dark: #808080;
+  --ink: #000000;
+  --muted: #444444;
+  --green: #005c00;
+  --green-soft: #e0f0e0;
+  --red: #800000;
+  --blue: #000080;
+  --raise-tl: #ffffff;
+  --raise-br: #808080;
+  --raise-br-dark: #393939;
+  --raise-br-btn: #858585;
 }
 body {
   height: 100%;
   overflow: hidden;
   padding-top: 23px;
   color: var(--ink);
-  background-color: #696969;
-  background-image:
-    linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255,255,255,.06) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(0,0,0,.08) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,.08) 75%);
-  background-size: 6px 6px;
-  background-position: 0 0, 0 3px, 3px -3px, -3px 0;
-  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
+  background-color: #008080;
+  font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
   font-size: 11px;
+  scrollbar-color: #808080 #c0c0c0;
+  scrollbar-width: auto;
 }
 button, select { font: inherit; color: inherit; }
 #menubar {
@@ -45,14 +44,15 @@ button, select { font: inherit; color: inherit; }
   align-items: center;
   gap: 2px;
   padding: 0 6px;
-  background: #fff;
-  border-bottom: 1px solid #999;
+  background: var(--panel);
+  border-bottom: 1px solid var(--raise-br-dark);
   user-select: none;
+  color: #000;
 }
-.menu-item { padding: 2px 8px; border-radius: 2px; cursor: default; }
-.menu-item:hover { background: #000; color: #fff; }
-#save-indicator { margin-left: 6px; color: #777; font-size: 10px; }
-#clock { margin-left: auto; padding-right: 4px; font-size: 11px; color: #333; }
+.menu-item { padding: 2px 8px; border-radius: 0; cursor: default; color: #000; }
+.menu-item:hover { background: #000080; color: #fff; }
+#save-indicator { margin-left: 6px; color: #555; font-size: 10px; }
+#clock { margin-left: auto; padding-right: 4px; font-size: 11px; color: #000; }
 #app {
   height: calc(100vh - 23px);
   min-height: 0;
@@ -66,41 +66,46 @@ button, select { font: inherit; color: inherit; }
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
-  padding: 7px;
+  padding: 6px;
   background: var(--panel);
-  border: 1px solid #000;
-  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
 }
 .top-stat {
   min-width: 0;
-  padding: 5px 7px;
-  background: var(--paper);
-  border: 1px solid #000;
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #aaa;
+  padding: 7px 10px;
+  background: #d9d8d9;
+  border-top: 2px solid var(--raise-br);
+  border-left: 2px solid var(--raise-br);
+  border-right: 2px solid var(--raise-tl);
+  border-bottom: 2px solid var(--raise-tl);
 }
 .top-label {
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
 }
 .top-value {
   min-height: 20px;
   overflow: hidden;
-  font-family: "Courier New", monospace;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: bold;
   line-height: 1.1;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 .top-value.bump, .stat-value.bump { animation: bump 230ms ease-out; }
 @keyframes bump {
-  0% { background: #fff; color: var(--green); }
-  100% { background: transparent; color: inherit; }
+  0% { color: var(--green); }
+  100% { color: inherit; }
 }
 .layout {
   display: grid;
@@ -114,27 +119,40 @@ button, select { font: inherit; color: inherit; }
   display: flex;
   flex-direction: column;
   background: var(--panel);
-  border: 1px solid #000;
-  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
+  border-radius: 0;
+  overflow: hidden;
 }
 .overview-panel { flex: 1; }
 .overview-body {
   overflow-y: auto;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
 }
 .title {
   position: relative;
-  flex: 0 0 18px;
+  flex: 0 0 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: repeating-linear-gradient(to bottom, #000 0 1px, var(--panel) 1px 2px);
+  background: #000080;
+  border-bottom: 1px solid #000;
 }
 .title span {
   padding: 0 6px;
-  background: var(--panel);
+  background: transparent;
+  color: #fff;
   font-size: 11px;
   font-weight: bold;
+  text-shadow: none;
+  letter-spacing: .02em;
 }
 .body {
   min-height: 0;
@@ -157,29 +175,34 @@ button, select { font: inherit; color: inherit; }
   justify-content: center;
   gap: 5px;
   min-height: 24px;
-  padding: 4px 8px;
+  padding: 3px 10px;
   background: var(--panel);
-  border: 1px solid #000;
-  border-right-color: #555;
-  border-bottom-color: #555;
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #888;
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-btn);
+  border-bottom: 2px solid var(--raise-br-btn);
+  border-radius: 0;
   cursor: pointer;
   text-align: center;
+  color: #000;
+  text-shadow: none;
 }
-.btn:hover:not(:disabled) { background: #e4e1da; }
+.btn:hover:not(:disabled) { background: #d4d4d4; }
 .btn:active:not(:disabled) {
-  border-top-color: #555; border-left-color: #555;
-  border-right-color: #000; border-bottom-color: #000;
-  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #888;
+  border-top: 2px solid var(--raise-br-btn);
+  border-left: 2px solid var(--raise-br-btn);
+  border-right: 2px solid var(--raise-tl);
+  border-bottom: 2px solid var(--raise-tl);
+  box-shadow: none;
+  padding: 4px 9px 2px 11px;
 }
-.btn:disabled { color: #8a8a8a; background: #c9c5bd; cursor: default; }
+.btn:disabled { color: var(--raise-br); background: var(--panel); border-top: 2px solid var(--raise-tl); border-left: 2px solid var(--raise-tl); border-right: 2px solid var(--raise-br-btn); border-bottom: 2px solid var(--raise-br-btn); box-shadow: none; cursor: default; }
 .btn.primary {
   width: 100%;
   min-height: 76px;
   flex-direction: column;
   font-size: 18px;
   font-weight: bold;
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #888, 0 0 0 1px #000;
 }
 .btn.primary small { font-size: 11px; font-weight: normal; }
 .action-wrap { position: relative; }
@@ -192,7 +215,7 @@ button, select { font: inherit; color: inherit; }
   border: 1px solid var(--green);
   background: #fff;
   color: var(--green);
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-size: 10px;
   pointer-events: none;
   animation: floatUp .9s ease-out forwards;
@@ -212,7 +235,7 @@ button, select { font: inherit; color: inherit; }
 .stat-label { color: var(--muted); }
 .stat-value {
   text-align: right;
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-weight: bold;
   font-variant-numeric: tabular-nums;
 }
@@ -223,29 +246,38 @@ button, select { font: inherit; color: inherit; }
 }
 .mini-item {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   min-width: 0;
   max-width: 100%;
-  gap: 8px;
+  gap: 6px;
   padding: 2px 0;
   border-bottom: 1px dotted #aaa;
 }
-.mini-item span:first-child {
+.mini-item span:nth-child(2) {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.mini-done { opacity: 0.5; }
+.mini-done .mini-value { color: var(--green); }
+.mini-icon {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
 .mini-value {
   flex-shrink: 0;
   color: #222;
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-weight: bold;
   text-align: right;
 }
 .mini-help {
-  position: relative;
   flex: 0 0 auto;
   width: 14px;
   height: 14px;
@@ -253,33 +285,32 @@ button, select { font: inherit; color: inherit; }
   place-items: center;
   border: 1px solid #000;
   background: #fff;
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-size: 10px;
   font-weight: bold;
   cursor: help;
 }
-.mini-help::after {
-  content: attr(data-tip);
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 5px);
-  z-index: 20;
-  width: min(190px, calc(100vw - 32px));
+.badge[data-tip] {
+  cursor: help;
+}
+#tip {
+  position: fixed;
+  z-index: 9999;
+  max-width: 240px;
   padding: 5px;
   border: 1px solid #000;
   background: #fff;
   color: #111;
   box-shadow: 2px 2px 0 rgba(0,0,0,.35);
-  font-family: Geneva, "Helvetica Neue", Arial, sans-serif;
+  font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
   font-size: 10px;
   font-weight: normal;
   line-height: 1.35;
   text-align: left;
-  white-space: normal;
-  opacity: 0;
+  white-space: pre-line;
   pointer-events: none;
+  display: none;
 }
-.mini-help:hover::after { opacity: 1; }
 .mini-note {
   padding: 2px 0;
   color: var(--muted);
@@ -288,8 +319,25 @@ button, select { font: inherit; color: inherit; }
 .subhead {
   margin-top: 2px;
   color: #555;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.desk-card {
+  background: #d9d8d9;
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
+  padding: 8px;
+}
+.desk-card-title {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: var(--ink);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
@@ -299,8 +347,12 @@ button, select { font: inherit; color: inherit; }
   justify-content: space-between;
   gap: 8px;
   padding: 6px;
-  background: var(--paper);
-  border: 1px solid #000;
+  background: #d9d8d9;
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
 }
 .segmented { display: flex; gap: 3px; flex-wrap: wrap; }
 .segmented .btn {
@@ -309,9 +361,13 @@ button, select { font: inherit; color: inherit; }
   font-size: 10px;
 }
 .segmented .active {
-  background: #111;
-  color: #fff;
+  background: #000080;
+  border-top: 2px solid var(--raise-br-btn);
+  border-left: 2px solid var(--raise-br-btn);
+  border-right: 2px solid var(--raise-tl);
+  border-bottom: 2px solid var(--raise-tl);
   box-shadow: none;
+  color: #fff;
 }
 #generator-list, #upgrade-list {
   min-height: 0;
@@ -324,58 +380,97 @@ button, select { font: inherit; color: inherit; }
 .generator-row {
   position: relative;
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
   gap: 8px;
-  padding: 7px;
-  background: var(--paper);
-  border: 1px solid #000;
-}
-.generator-row.flash { animation: rowFlash 420ms ease-out; }
-@keyframes rowFlash {
-  0% { background: #fff; }
-  100% { background: var(--paper); }
+  padding: 8px;
+  background: #d9d8d9;
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
 }
 .gen-icon {
-  width: 24px; height: 24px;
+  width: 96px;
+  height: 96px;
+  flex: 0 0 96px;
   display: grid;
   place-items: center;
-  font-size: 14px;
-  line-height: 1;
+  align-self: start;
+}
+.gen-icon img {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  object-fit: contain;
 }
 .gen-main { min-width: 0; }
 .gen-top {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  margin-bottom: 5px;
 }
 .gen-name { font-size: 13px; font-weight: bold; }
 .gen-cycle-inline {
-  color: var(--muted);
-  font-family: "Courier New", monospace;
+  color: var(--ink);
   font-size: 10px;
 }
-.gen-owned-right {
+.gen-right-col {
   margin-left: auto;
-  font-size: 18px;
-  font-weight: bold;
-  font-family: "Courier New", monospace;
-  line-height: 1.1;
-  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
 }
-.owned { color: var(--muted); font-family: "Courier New", monospace; white-space: nowrap; }
-.gen-desc {
-  margin: 1px 0 4px;
-  color: var(--muted);
-  font-size: 10px;
-}
-.gen-output {
+.gen-top-right {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 5px;
-  font-family: "Courier New", monospace;
+  gap: 4px;
+}
+.gen-milestone-right {
   font-size: 10px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.gen-owned-right {
+  font-size: 11px;
   color: var(--muted);
+  white-space: nowrap;
+}
+.gen-cycle-primary {
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.owned { color: var(--muted); font-family: "Fixedsys", "Courier New", monospace; white-space: nowrap; }
+.gen-desc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 1px 0 10px;
+}
+.gen-desc {
+  color: var(--muted);
+  font-size: 10px;
+}
+.gen-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.gen-output {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--ink);
+  padding-top: 4px;
 }
 .gen-output .gen-rate {
   color: var(--ink);
@@ -392,61 +487,76 @@ button, select { font: inherit; color: inherit; }
   width: 0%;
   height: 100%;
   background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 4px, transparent 4px 8px),
-    var(--green);
+    linear-gradient(to bottom, rgba(120,160,255,0.45) 0%, rgba(0,0,80,0.2) 100%),
+    repeating-linear-gradient(
+      90deg,
+      #0048c8 0px, #0048c8 10px,
+      #ffffff 10px, #ffffff 12px
+    );
 }
 .progress-shell.fast .progress-fill {
   width: 100% !important;
-  background:
-    linear-gradient(to bottom, rgba(255,255,255,.18), rgba(0,0,0,.08)),
-    var(--green);
   position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(to bottom, rgba(120,160,255,0.45) 0%, rgba(0,0,80,0.2) 100%),
+    repeating-linear-gradient(
+      90deg,
+      #0048c8 0px, #0048c8 10px,
+      #ffffff 10px, #ffffff 12px
+    );
 }
 .progress-shell.fast .progress-fill::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 10px, rgba(0,0,0,.05) 10px 20px);
-  background-size: 20px 100%;
-  animation: fastBar 430ms linear infinite;
-  mix-blend-mode: screen;
-  opacity: 0.95;
+  top: 0; bottom: 0;
+  width: 24px;
+  background: rgba(255,255,255,0.38);
+  animation: marquee 700ms linear infinite;
 }
-@keyframes fastBar {
-  from { background-position: 0 0; }
-  to { background-position: 20px 0; }
+@keyframes marquee {
+  from { left: -24px; }
+  to   { left: 100%; }
 }
 .gen-bottom {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  justify-content: flex-end;
   gap: 8px;
-  align-items: center;
+  align-items: flex-start;
+  flex: 0 0 auto;
 }
-.timer { font-family: "Courier New", monospace; font-size: 10px; color: #333; }
+.timer { font-family: "Fixedsys", "Courier New", monospace; font-size: 10px; color: #333; }
 .gen-actions { display: flex; gap: 4px; }
-.gen-actions .btn { min-height: 23px; padding: 2px 7px; font-size: 10px; }
-.gen-actions .btn.need {
-  color: #777;
-  background: #cbc7bf;
+.gen-actions .btn {
+  min-height: 34px;
+  padding: 2px 10px;
 }
+.gen-actions .btn.need { color: var(--raise-br); }
 .badge {
   display: inline-block;
   padding: 1px 4px;
   border: 1px solid #000;
+  border-radius: 0;
   background: #fff;
-  font-size: 9px;
-  font-weight: bold;
+  color: #000;
+  font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
 }
-.badge.auto { color: var(--green); border-color: var(--green); }
+.badge.auto { background: #000080; color: #fff; border-color: #000; }
 .locked {
   opacity: .68;
   grid-template-columns: 28px minmax(0, 1fr);
 }
 .upgrade-card {
-  padding: 7px;
-  background: var(--paper);
-  border: 1px solid #000;
+  padding: 8px;
+  background: #d9d8d9;
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
+  border-radius: 0;
 }
 .upgrade-head {
   display: flex;
@@ -455,10 +565,6 @@ button, select { font: inherit; color: inherit; }
   margin-bottom: 3px;
 }
 .upgrade-name { font-weight: bold; }
-.upgrade-cost {
-  font-family: "Courier New", monospace;
-  white-space: nowrap;
-}
 .upgrade-desc {
   color: var(--muted);
   font-size: 10px;
@@ -467,14 +573,24 @@ button, select { font: inherit; color: inherit; }
 }
 .upgrade-effect {
   margin-bottom: 6px;
-  color: var(--blue);
-  font-family: "Courier New", monospace;
+  color: var(--green);
+  font-family: "Fixedsys", "Courier New", monospace;
   font-size: 10px;
   font-weight: bold;
 }
+.upgrade-card .btn { width: 100%; font-weight: bold; }
+.upgrade-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+.upgrade-card-body { flex: 1; min-width: 0; }
+.upgrade-card-inner { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
 .empty {
   padding: 8px;
-  color: #777;
+  color: #555;
   background: var(--paper);
   border: 1px dotted #888;
   line-height: 1.4;
@@ -493,8 +609,13 @@ button, select { font: inherit; color: inherit; }
 .modal {
   width: min(360px, 100%);
   background: var(--panel);
-  border: 1px solid #000;
-  box-shadow: 3px 3px 0 rgba(0,0,0,.45);
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br), 4px 4px 0 rgba(0,0,0,.4);
+  border-radius: 0;
+  overflow: hidden;
 }
 .modal .body { gap: 10px; }
 .modal h2 { font-size: 14px; margin-bottom: 2px; }
@@ -508,9 +629,13 @@ button, select { font: inherit; color: inherit; }
   align-items: center;
   gap: 4px;
   padding: 5px 9px;
-  background: var(--paper);
-  border: 1px solid #000;
-  box-shadow: 2px 2px 0 rgba(0,0,0,.45);
+  background: var(--panel);
+  border-top: 2px solid var(--raise-tl);
+  border-left: 2px solid var(--raise-tl);
+  border-right: 2px solid var(--raise-br-dark);
+  border-bottom: 2px solid var(--raise-br-dark);
+  box-shadow: inset -1px -1px 0 var(--raise-br);
+  border-radius: 0;
   font-size: 10px;
 }
 .formula-row {
@@ -522,17 +647,17 @@ button, select { font: inherit; color: inherit; }
 }
 .formula-tagline {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: .04em;
 }
 .formula-part {
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-weight: bold;
 }
 .formula-op { color: var(--muted); }
 .formula-result {
   margin-left: auto;
-  font-family: "Courier New", monospace;
+  font-family: "Fixedsys", "Courier New", monospace;
   font-weight: bold;
   color: var(--green);
 }
@@ -550,6 +675,57 @@ button, select { font: inherit; color: inherit; }
   .gen-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .top-value { font-size: 17px; }
 }
+/* Win98 scrollbars */
+::-webkit-scrollbar { width: 16px; height: 16px; }
+::-webkit-scrollbar-track {
+  background-color: #c0c0c0;
+  background-image: repeating-conic-gradient(#fff 0% 25%, #c0c0c0 0% 50%);
+  background-size: 2px 2px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  box-shadow: inset -1px -1px 0 #808080;
+  min-height: 20px;
+}
+::-webkit-scrollbar-thumb:hover { background: #d4d4d4; }
+::-webkit-scrollbar-thumb:active {
+  border-top: 2px solid #000;
+  border-left: 2px solid #000;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+::-webkit-scrollbar-button:single-button {
+  width: 16px;
+  height: 16px;
+  display: block;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  box-shadow: inset -1px -1px 0 #808080;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 10px 10px;
+}
+::-webkit-scrollbar-button:single-button:active {
+  border-top: 2px solid #000;
+  border-left: 2px solid #000;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  box-shadow: inset 1px 1px 0 #808080;
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpolygon points='5,2 9,8 1,8' fill='%23000'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpolygon points='1,2 9,2 5,8' fill='%23000'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar-corner { background: #c0c0c0; }
 </style>
 </head>
 <body>
@@ -558,7 +734,6 @@ button, select { font: inherit; color: inherit; }
   <span class="menu-item" onclick="saveGame(true)">Save</span>
   <span class="menu-item" onclick="resetGame()">New Game</span>
   <span id="save-indicator"></span>
-  <span id="clock">12:00 PM</span>
 </div>
 
 <main id="app">
@@ -588,16 +763,16 @@ button, select { font: inherit; color: inherit; }
       <section class="panel overview-panel">
         <div class="title"><span>The Desk</span></div>
         <div class="body overview-body">
-          <div class="subhead">Goals</div>
-          <div class="mini-list" id="goal-list"></div>
-          <div class="subhead">Purchased</div>
-          <div class="mini-list" id="purchased-list"></div>
+          <div class="desk-card">
+            <div class="desk-card-title">Goals</div>
+            <div class="mini-list" id="goal-list"></div>
+          </div>
         </div>
       </section>
     </div>
 
     <section class="panel">
-      <div class="title"><span>Generators</span></div>
+      <div class="title"><span>Idea Generators</span></div>
       <div class="body">
         <div class="board-tools">
           <div>
@@ -614,7 +789,13 @@ button, select { font: inherit; color: inherit; }
       <section class="panel" style="flex:1;">
         <div class="title"><span>Upgrades</span></div>
         <div class="body">
-          <div id="upgrade-list"></div>
+          <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;">
+            <div id="upgrade-list" style="flex:0 0 auto;"></div>
+            <div class="desk-card" style="flex:1;min-height:0;overflow-y:auto;">
+              <div class="desk-card-title">Purchased</div>
+              <div class="mini-list" id="purchased-list"></div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -639,17 +820,18 @@ button, select { font: inherit; color: inherit; }
 
 <div class="modal-backdrop" id="about-modal">
   <div class="modal">
-    <div class="title"><span>About Genesis</span></div>
+    <div class="title" style="height:28px;">
+      <button class="btn" onclick="closeAboutModal()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);min-height:20px;height:20px;width:20px;padding:0;font-size:11px;line-height:1;">✕</button>
+    </div>
     <div class="body" style="text-align:center;">
       <div>
-        <h2 style="margin-top:16px;margin-bottom:16px;">Genesis</h2>
-        <p>Have ideas - make money.</p>
+        <h2 style="margin-top:16px;margin-bottom:8px;">Genesis</h2>
+        <p style="margin-bottom:16px;">Have ideas - make money.</p>
         <p>Genesis is an idle clicker game about the compounding value of ideas. Can your shower thought become the next paradigm shift?</p>
-        <p>Now we have AI to execute everything for us, it's the ideas we have that'll make the money. More ideas = more money. The rest is admin.</p>
-        <p style="margin-top:16px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a>.</p>
-        <p style="margin-top:4px;color:#777;font-size:10px;">v1.0.5</p>
+        <p style="margin-top:10px;">More ideas = more money. The rest is admin.</p>
+        <p style="margin-top:16px;color:#555;font-size:11px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a> &nbsp;·&nbsp; v2.0.1</p>
       </div>
-      <button class="btn" onclick="closeAboutModal()">OK</button>
+      <button class="btn" style="margin-top:20px;" onclick="closeAboutModal()">OK</button>
     </div>
   </div>
 </div>
@@ -659,7 +841,7 @@ button, select { font: inherit; color: inherit; }
     <div class="title"><span>While You Were Away</span></div>
     <div class="body">
       <div>
-        <h2>Progress was filed.</h2>
+        <h2>Ideas happened.</h2>
         <p id="offline-summary"></p>
       </div>
       <button class="btn" onclick="closeOfflineModal()">OK</button>
@@ -682,31 +864,32 @@ const GENERATOR_MILESTONES = [
   { count: 200, multiplier: 5 }
 ];
 
-const GENERATOR_EMOJI = {
-  shower_thought: '🚿',
-  notebook:       '📓',
-  conversation:   '💬',
-  workshop:       '🛠️',
-  newsletter:     '📰',
-  following:      '👥',
-  chapter:        '🏠',
-  institution:    '🏛️',
-  movement:       '✊',
-  paradigm:       '🌐',
+const GENERATOR_ICONS = {
+  shower_thought: 'images/gen_shower_thought.png',
+  notebook:       'images/gen_notebook.png',
+  conversation:   'images/gen_conversation.png',
+  workshop:       'images/gen_workshop.png',
+  newsletter:     'images/gen_newsletter.png',
+  following:      'images/gen_following.png',
+  chapter:        'images/gen_chapter.png',
+  institution:    'images/gen_institution.png',
+  movement:       'images/gen_movement.png',
+  paradigm:       'images/gen_paradigm.png',
 };
 
 const generatorDefs = [
-  { id:'shower_thought', name:'Shower Thought', pluralName:'Shower Thoughts', actionVerb:'Have It', description:'The lone spark. You weren\'t even trying.', baseCost:15, costMultiplier:1.15, baseIdeasPerCycle:1, baseCycleSeconds:3, unlockAt:0 },
-  { id:'notebook', name:'Notebook', pluralName:'Notebooks', actionVerb:'Fill a Page', description:'The idea exists outside your head now.', baseCost:100, costMultiplier:1.15, baseIdeasPerCycle:4, baseCycleSeconds:5, unlockAt:10 },
-  { id:'conversation', name:'Conversation', pluralName:'Conversations', actionVerb:'Start Talking', description:'Two people. The idea survives contact.', baseCost:1100, costMultiplier:1.15, baseIdeasPerCycle:15, baseCycleSeconds:10, unlockAt:50 },
-  { id:'workshop', name:'Workshop', pluralName:'Workshops', actionVerb:'Convene', description:'A small group. A whiteboard. A marker that works.', baseCost:12000, costMultiplier:1.15, baseIdeasPerCycle:60, baseCycleSeconds:20, unlockAt:250 },
-  { id:'newsletter', name:'Newsletter', pluralName:'Newsletters', actionVerb:'Publish', description:'One voice. Many strangers. Something stirs.', baseCost:130000, costMultiplier:1.15, baseIdeasPerCycle:200, baseCycleSeconds:120, unlockAt:1000 },
-  { id:'following', name:'Following', pluralName:'Followings', actionVerb:'Cultivate', description:'People seek it out. You didn\'t ask them to.', baseCost:1400000, costMultiplier:1.15, baseIdeasPerCycle:700, baseCycleSeconds:240, unlockAt:5000 },
-  { id:'chapter', name:'Chapter', pluralName:'Chapters', actionVerb:'Establish', description:'The idea has a room. And a schedule.', baseCost:20000000, costMultiplier:1.15, baseIdeasPerCycle:2500, baseCycleSeconds:480, unlockAt:25000 },
-  { id:'institution', name:'Institution', pluralName:'Institutions', actionVerb:'Incorporate', description:'A building. A budget. A logo. The idea is serious now.', baseCost:330000000, costMultiplier:1.15, baseIdeasPerCycle:10000, baseCycleSeconds:960, unlockAt:100000 },
-  { id:'movement', name:'Movement', pluralName:'Movements', actionVerb:'Launch', description:'The idea has a name that isn\'t yours anymore.', baseCost:5000000000, costMultiplier:1.15, baseIdeasPerCycle:50000, baseCycleSeconds:1920, unlockAt:1000000 },
-  { id:'paradigm', name:'Paradigm', pluralName:'Paradigms', actionVerb:'Establish', description:'The idea is now what everyone assumes.', baseCost:90000000000, costMultiplier:1.15, baseIdeasPerCycle:250000, baseCycleSeconds:3840, unlockAt:10000000 }
+  { id:'shower_thought', name:'Shower Thought', pluralName:'Shower Thoughts', actionVerb:'Have It', autoLabel:'Auto-Thinking', description:'The lone spark. You weren\'t even trying.', baseCost:15, costMultiplier:1.15, baseIdeasPerCycle:1, baseCycleSeconds:3, unlockAt:0 },
+  { id:'notebook', name:'Notebook', pluralName:'Notebooks', actionVerb:'Fill a Page', autoLabel:'Auto-Writing', description:'The idea exists outside your head now.', baseCost:100, costMultiplier:1.15, baseIdeasPerCycle:4, baseCycleSeconds:5, unlockAt:10 },
+  { id:'conversation', name:'Conversation', pluralName:'Conversations', actionVerb:'Start Talking', autoLabel:'Auto-Talking', description:'Two people. The idea survives contact.', baseCost:1100, costMultiplier:1.15, baseIdeasPerCycle:15, baseCycleSeconds:10, unlockAt:50 },
+  { id:'workshop', name:'Workshop', pluralName:'Workshops', actionVerb:'Convene', autoLabel:'Auto-Convening', description:'A small group. A whiteboard. A marker that works.', baseCost:12000, costMultiplier:1.15, baseIdeasPerCycle:60, baseCycleSeconds:20, unlockAt:250 },
+  { id:'newsletter', name:'Newsletter', pluralName:'Newsletters', actionVerb:'Publish', autoLabel:'Auto-Publishing', description:'One voice. Many strangers. Something stirs.', baseCost:130000, costMultiplier:1.15, baseIdeasPerCycle:200, baseCycleSeconds:120, unlockAt:1000 },
+  { id:'following', name:'Following', pluralName:'Followings', actionVerb:'Cultivate', autoLabel:'Auto-Growing', description:'People seek it out. You didn\'t ask them to.', baseCost:1400000, costMultiplier:1.15, baseIdeasPerCycle:700, baseCycleSeconds:240, unlockAt:5000 },
+  { id:'chapter', name:'Chapter', pluralName:'Chapters', actionVerb:'Establish', autoLabel:'Auto-Running', description:'The idea has a room. And a schedule.', baseCost:20000000, costMultiplier:1.15, baseIdeasPerCycle:2500, baseCycleSeconds:480, unlockAt:25000 },
+  { id:'institution', name:'Institution', pluralName:'Institutions', actionVerb:'Incorporate', autoLabel:'Auto-Operating', description:'A building. A budget. A logo. The idea is serious now.', baseCost:330000000, costMultiplier:1.15, baseIdeasPerCycle:10000, baseCycleSeconds:960, unlockAt:100000 },
+  { id:'movement', name:'Movement', pluralName:'Movements', actionVerb:'Launch', autoLabel:'Auto-Spreading', description:'The idea has a name that isn\'t yours anymore.', baseCost:5000000000, costMultiplier:1.15, baseIdeasPerCycle:50000, baseCycleSeconds:1920, unlockAt:1000000 },
+  { id:'paradigm', name:'Paradigm', pluralName:'Paradigms', actionVerb:'Establish', autoLabel:'Auto-Assuming', description:'The idea is now what everyone assumes.', baseCost:90000000000, costMultiplier:1.15, baseIdeasPerCycle:250000, baseCycleSeconds:3840, unlockAt:10000000 }
 ];
+
 
 const upgradeDefs = [
   // Global — idea count thresholds
@@ -724,12 +907,12 @@ const upgradeDefs = [
   { id:'the_diagram', name:'The Diagram', description:'The idea became a picture. Comprehension doubled.', cost:65000000, unlockAt:50000, effectType:'all_generators_multiply', effectValue:2 },
   { id:'borrowed_legitimacy', name:'Borrowed Legitimacy', description:'An endorsement from someone already trusted.', cost:250000000, unlockAt:100000, effectType:'all_generators_multiply', effectValue:1.5 },
   { id:'the_retreat', name:'The Retreat', description:'Off-site. Output triples. Nobody questions it.', cost:350000000, unlockAt:250000, effectType:'all_generators_speed_multiply', effectValue:2 },
-  { id:'the_index', name:'The Index', description:'The idea became findable. Findable became valuable.', cost:3000000000, unlockAt:1000000, effectType:'money_per_idea_multiply', effectValue:3 },
-  { id:'policy', name:'Policy', description:'The idea became legislation.', cost:50000000000, unlockAt:10000000, effectType:'all_generators_speed_multiply', effectValue:3 },
+  { id:'the_index', name:'The Index', description:'The idea became findable. Findable became valuable.', cost:3000000000, unlockAt:500000, effectType:'money_per_idea_multiply', effectValue:5 },
+  { id:'policy', name:'Policy', description:'The idea became legislation.', cost:50000000000, unlockAt:10000000, effectType:'all_generators_speed_multiply', effectValue:8 },
   // Global — generator count thresholds
   { id:'systematic_thinking', name:'Systematic Thinking', description:'Pattern recognition sets in.', cost:850000, unlockCondition:{ generatorId:'conversation', owned:20 }, effectType:'all_generators_speed_multiply', effectValue:1.5 },
   { id:'network_effects', name:'Network Effects', description:'The connections outvalue the nodes.', cost:12500000, unlockCondition:{ generatorId:'chapter', owned:20 }, effectType:'all_generators_multiply', effectValue:2 },
-  { id:'distributed_authority', name:'Distributed Authority', description:'The centre is everywhere now.', cost:18000000000, unlockCondition:{ generatorId:'paradigm', owned:10 }, effectType:'all_generators_speed_multiply', effectValue:2 },
+  { id:'distributed_authority', name:'Distributed Authority', description:'The centre is everywhere now.', cost:18000000000, unlockCondition:{ generatorId:'paradigm', owned:10 }, effectType:'all_generators_speed_multiply', effectValue:6 },
   // Shower Thought
   { id:'morning_routine', name:'Morning Routine', description:'The shower is now scheduled.', cost:300, unlockCondition:{ generatorId:'shower_thought', owned:2 }, effectType:'automate_generator', targetGeneratorId:'shower_thought' },
   { id:'wet_floor_sign', name:'The Wet Floor Sign', description:'Hazardous. Generative.', cost:1000, unlockCondition:{ generatorId:'shower_thought', owned:10 }, effectType:'generator_multiply', targetGeneratorId:'shower_thought', effectValue:2 },
@@ -769,7 +952,7 @@ const upgradeDefs = [
   // Paradigm
   { id:'common_knowledge', name:'Common Knowledge', description:'No one remembers who started it.', cost:1200000000, unlockCondition:{ generatorId:'paradigm', owned:1 }, effectType:'automate_generator', targetGeneratorId:'paradigm' },
   { id:'retrospective_inevitability', name:'Retrospective Inevitability', description:'Everyone knew it all along.', cost:10000000000, unlockCondition:{ generatorId:'paradigm', owned:1 }, effectType:'generator_multiply', targetGeneratorId:'paradigm', effectValue:2 },
-  { id:'peer_review', name:'Peer Review', description:'Acceleration via approval.', cost:25000000000, unlockCondition:{ generatorId:'paradigm', owned:3 }, effectType:'generator_speed_multiply', targetGeneratorId:'paradigm', effectValue:2 }
+  { id:'peer_review', name:'Peer Review', description:'Acceleration via approval.', cost:25000000000, unlockCondition:{ generatorId:'paradigm', owned:3 }, effectType:'generator_speed_multiply', targetGeneratorId:'paradigm', effectValue:4 }
 ];
 
 const ideaMilestones = [
@@ -821,7 +1004,7 @@ function formatNumber(value, decimals = 1) {
   let tier = Math.floor(Math.log10(n) / 3);
   tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
   const scaled = n / Math.pow(1000, tier);
-  return sign + scaled.toFixed(scaled >= 100 ? 0 : decimals) + NUMBER_SUFFIXES[tier];
+  return sign + scaled.toFixed(scaled >= 100 ? 1 : decimals) + NUMBER_SUFFIXES[tier];
 }
 function money(value) { return '$' + formatNumber(value); }
 function escAttr(value) {
@@ -835,25 +1018,39 @@ function formatWholeNumber(value) {
   if (!Number.isFinite(value)) return '0';
   const sign = value < 0 ? '-' : '';
   let n = Math.floor(Math.abs(value));
-  if (n < 100000) return sign + n.toLocaleString();
+  if (n < 1000) return sign + n.toLocaleString();
   let tier = Math.floor(Math.log10(n) / 3);
   tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
-  const scaled = n / Math.pow(1000, tier);
-  return sign + scaled.toFixed(scaled >= 100 ? 0 : 2) + NUMBER_SUFFIXES[tier];
+  const displayTier = Math.max(0, tier - 2);
+  const scaled = n / Math.pow(1000, displayTier);
+  return sign + Math.round(scaled).toLocaleString() + NUMBER_SUFFIXES[displayTier];
 }
 function formatHeaderNumber(value) {
-  if (!Number.isFinite(value)) return '0.00';
+  if (!Number.isFinite(value)) return '0.0000';
   const sign = value < 0 ? '-' : '';
   let n = Math.abs(value);
-  if (n < 100000) {
-    return sign + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (n < 1000) {
+    const decimals = n === 0 ? 4 : n < 1 ? 4 : n < 10 ? 3 : n < 100 ? 2 : 1;
+    return sign + n.toFixed(decimals);
   }
   let tier = Math.floor(Math.log10(n) / 3);
   tier = Math.min(tier, NUMBER_SUFFIXES.length - 1);
-  const scaled = n / Math.pow(1000, tier);
-  return sign + scaled.toFixed(3) + NUMBER_SUFFIXES[tier];
+  const displayTier = Math.max(0, tier - 1);
+  const scaled = n / Math.pow(1000, displayTier);
+  return sign + Math.round(scaled).toLocaleString() + NUMBER_SUFFIXES[displayTier];
 }
 function headerMoney(value) { return '$' + formatHeaderNumber(value); }
+function headerMoneyInTierOf(value, reference) {
+  const refN = Math.abs(reference);
+  if (refN < 1000) return '$' + formatHeaderNumber(value);
+  let refTier = Math.floor(Math.log10(refN) / 3);
+  refTier = Math.min(refTier, NUMBER_SUFFIXES.length - 1);
+  const displayTier = Math.max(0, refTier - 1);
+  const scaled = Math.abs(value) / Math.pow(1000, displayTier);
+  if (scaled < 0.5) return '$' + formatHeaderNumber(value);
+  const sign = value < 0 ? '-' : '';
+  return '$' + sign + Math.round(scaled).toLocaleString() + NUMBER_SUFFIXES[displayTier];
+}
 function formatTime(seconds) {
   seconds = Math.max(0, seconds);
   if (seconds < 60 && seconds % 1 !== 0) return `00:${seconds.toFixed(1).padStart(4, '0')}`;
@@ -1053,8 +1250,6 @@ function updateGenerators(delta) {
       state.ideas += added;
       bump('ideas-display');
       if (!gen.automated) {
-        gen.flashed = true;
-        setTimeout(() => { gen.flashed = false; renderGenerators(); }, 430);
       }
       if (gen.automated) {
         gen.progress = gen.progress % cycle;
@@ -1106,7 +1301,6 @@ function tick() {
     renderGenerators();
   }
   if (renderCounter % 20 === 0) renderUpgrades();
-  if (renderCounter % 20 === 0) updateClock();
   if (renderCounter % 100 === 0) saveGame(false);
 }
 
@@ -1121,7 +1315,7 @@ function renderTopStats() {
   document.getElementById('ideas-display').textContent = formatWholeNumber(state.ideas) + ' ideas';
   document.getElementById('money-display').textContent = headerMoney(state.money);
   document.getElementById('idea-rate-display').textContent = '+' + formatHeaderNumber(getTotalIdeaRate()) + ' ideas/sec';
-  document.getElementById('income-display').textContent = '+' + headerMoney(getMoneyPerSecond()) + '/sec';
+  document.getElementById('income-display').textContent = '+' + headerMoneyInTierOf(getMoneyPerSecond(), state.money) + '/sec';
   renderFormulaBar();
 }
 function renderFormulaBar() {
@@ -1133,8 +1327,8 @@ function renderFormulaBar() {
     .filter(u => u && u.effectType === 'money_per_idea_multiply');
   const genMult = state.globalGeneratorMultiplier || 1;
   const moneyRate = state.moneyPerIdea * state.globalMoneyMultiplier;
-  const genBadges = genUpgrades.map(u => `<span class="badge">x${formatNumber(u.effectValue)} ${u.name}</span>`).join(' ');
-  const moneyBadges = moneyUpgrades.map(u => `<span class="badge">x${formatNumber(u.effectValue)} ${u.name}</span>`).join(' ');
+  const genBadges = genUpgrades.map(u => `<span class="badge" data-tip="${escAttr(`${u.description}\n${describeUpgradeEffect(u)}`)}" data-tip-img="images/${u.id}.png">${u.name}</span>`).join(' ');
+  const moneyBadges = moneyUpgrades.map(u => `<span class="badge" data-tip="${escAttr(`${u.description}\n${describeUpgradeEffect(u)}`)}" data-tip-img="images/${u.id}.png">${u.name}</span>`).join(' ');
   document.getElementById('formula-bar').innerHTML =
     `<div class="formula-row">` +
       `<span class="formula-part">${formatNumber(genMult)} ${genMult === 1 ? 'idea' : 'ideas'}</span>` +
@@ -1142,36 +1336,26 @@ function renderFormulaBar() {
       `<span class="formula-op">=</span>` +
       `<span class="formula-part">${headerMoney(moneyRate)}/sec</span>` +
       (moneyBadges ? ` ${moneyBadges}` : '') +
-    `</div>` +
-    `<div class="formula-tagline">Have ideas - make money.</div>`;
+    `</div>`;
 }
 function renderLeftStats() {
   const purchased = state.purchasedUpgrades
     .map(id => upgradeDefs.find(upg => upg.id === id))
     .filter(Boolean)
     .reverse()
-    .map(upg => `<div class="mini-item"><span>${upg.name}</span><span class="mini-help" data-tip="${escAttr(`${describeUpgradeEffect(upg)}. ${upg.description}`)}">?</span></div>`)
+    .map(upg => {
+      const iconHtml = `<img class="mini-icon" src="images/${upg.id}.png" alt="">`;
+      return `<div class="mini-item">${iconHtml}<span>${upg.name}</span><span class="mini-help" data-tip="${escAttr(`${upg.description}\n${describeUpgradeEffect(upg)}`)}" data-tip-img="images/${upg.id}.png">?</span></div>`;
+    })
     .join('');
   document.getElementById('purchased-list').innerHTML = purchased || '<div class="mini-note">No upgrades purchased.</div>';
 
   document.getElementById('goal-list').innerHTML = buildGoals()
-    .slice(0, 6)
-    .map(goal => `<div class="mini-item"><span>${goal.label}</span><span class="mini-value">${goal.value}</span></div>`)
+    .map(goal => `<div class="mini-item${goal.done ? ' mini-done' : ''}"><span>${goal.label}</span><span class="mini-value">${goal.value}</span></div>`)
     .join('');
 }
 function buildGoals() {
   const goals = [];
-  const unlockedUpgrades = upgradeDefs
-    .filter(isUpgradeUnlocked)
-    .sort((a, b) => a.cost - b.cost);
-  const affordableUpgrade = unlockedUpgrades.find(upg => upg.cost <= state.money);
-  if (affordableUpgrade) {
-    goals.push({ label: `Buy ${affordableUpgrade.name}`, value: money(affordableUpgrade.cost) });
-  }
-  const nextUpgrade = unlockedUpgrades.find(upg => upg.cost > state.money);
-  if (nextUpgrade) {
-    goals.push({ label: `Afford ${nextUpgrade.name}`, value: money(nextUpgrade.cost) });
-  }
 
   const nextAutomation = upgradeDefs.find(upg => {
     if (upg.effectType !== 'automate_generator') return false;
@@ -1211,13 +1395,22 @@ function buildGoals() {
     .map(def => ({ def, gen: state.generators[def.id], next: getNextMilestone(state.generators[def.id].owned) }))
     .filter(item => item.gen.owned > 0 && item.next)
     .sort((a, b) => (a.next.count - a.gen.owned) - (b.next.count - b.gen.owned))
-    .slice(0, 2)
     .forEach(item => {
       goals.push({
         label: `${item.def.name} milestone`,
         value: `${formatNumber(item.gen.owned)} / ${item.next.count}`
       });
     });
+
+  generatorDefs.forEach(def => {
+    const gen = state.generators[def.id];
+    if (!gen || gen.owned === 0) return;
+    GENERATOR_MILESTONES
+      .filter(m => gen.owned >= m.count)
+      .forEach(m => {
+        goals.push({ label: `${def.pluralName}: ${m.count}/${m.count} ×${m.multiplier}`, value: '☑️', done: true });
+      });
+  });
 
   return goals.length ? goals : [{ label:'No immediate goal', value:'OK' }];
 }
@@ -1233,7 +1426,7 @@ function describeUpgradeEffect(upg) {
   return 'Effect: filed for implementation';
 }
 function renderBuyModes() {
-  document.getElementById('buy-mode-label').textContent = state.buyMode === 'max' ? 'Adding Max' : `Adding ${state.buyMode}x`;
+  document.getElementById('buy-mode-label').textContent = state.buyMode === 'max' ? 'Adding +Max' : `Adding +${state.buyMode}`;
   document.getElementById('buy-mode-buttons').innerHTML = BUY_MODES.map(mode => (
     `<button class="btn ${state.buyMode === mode ? 'active' : ''}" data-buy-mode="${mode}">${mode === 'max' ? 'Max' : mode}</button>`
   )).join('');
@@ -1247,7 +1440,7 @@ function renderGenerators() {
     if (!visible && !preview) return '';
     if (preview) {
       return `<div class="generator-row locked">
-        <div class="gen-icon">${GENERATOR_EMOJI[def.id] || def.name.charAt(0)}</div>
+        <div class="gen-icon"><img src="${GENERATOR_ICONS[def.id]}" alt="${def.name}"></div>
         <div class="gen-main">
           <div class="gen-top"><span class="gen-name">${def.name}</span></div>
           <div class="gen-desc">Unlocks at ${formatNumber(def.unlockAt)} ideas.</div>
@@ -1258,81 +1451,110 @@ function renderGenerators() {
     const rate = getGeneratorIdeaRate(def, gen);
     const percent = gen.owned > 0 ? Math.min(100, (gen.progress / cycle) * 100) : 0;
     const fastCycle = cycle <= FAST_CYCLE_SECONDS && gen.automated;
-    const ideasPerCycle = getGeneratorIdeasPerCycle(def, gen);
+    const ideasPerCycle = gen.owned === 0
+      ? getGeneratorIdeasPerCycle(def, { ...gen, owned: 1 })
+      : getGeneratorIdeasPerCycle(def, gen);
     const buyAmount = getBuyAmount(def, gen);
     const cost = buyAmount > 0 ? getGeneratorCost(def, gen, buyAmount) : getGeneratorCost(def, gen, 1);
     const affordable = canAfford(cost);
     const nextMilestone = getNextMilestone(gen.owned);
+    const MILESTONE_MAXED = {
+      shower_thought: 'Every shower, an epiphany',
+      notebook:       'Every thought has a page',
+      conversation:   'Conversationmaxxing',
+      workshop:       'Every wall is a whiteboard',
+      newsletter:     'No stranger left unread',
+      following:      'They all found it themselves',
+      chapter:        'The room is always full',
+      institution:    'The idea has its own parking',
+      movement:       'Belongs to everyone now',
+      paradigm:       'Nobody questions it anymore',
+    };
     const milestoneText = nextMilestone
       ? `Milestone: ${formatNumber(gen.owned)} / ${nextMilestone.count} for ×${nextMilestone.multiplier} ideas output`
-      : 'All milestones reached';
-    const effectiveSpeed = (gen.speedMultiplier || 1) * (state.globalSpeedMultiplier || 1);
-    const speedText = effectiveSpeed > 1 ? ` <span class="badge">x${formatNumber(effectiveSpeed)} SPEED</span>` : '';
+      : (MILESTONE_MAXED[def.id] || 'All milestones reached');
     const canTrigger = gen.owned > 0 || canAfford(getGeneratorCost(def, gen, 1));
-    const startButton = !gen.automated && !gen.isRunning
-      ? `<button class="btn ${canTrigger ? '' : 'need'}" data-action="start-generator" data-generator-id="${def.id}" ${canTrigger ? '' : 'disabled'}>${def.actionVerb}</button>`
-      : '';
-    const status = gen.automated ? '<span class="badge auto">AUTO</span>' : gen.isRunning ? `<span class="badge">${gen.runningLabel || 'Thinking'}</span>` : '';
+    const startButton = gen.automated
+      ? `<button class="btn" disabled>${def.autoLabel}</button>`
+      : gen.isRunning
+        ? `<button class="btn" disabled>${gen.runningLabel || 'Thinking'}</button>`
+        : `<button class="btn ${canTrigger ? '' : 'need'}" data-action="start-generator" data-generator-id="${def.id}" ${canTrigger ? '' : 'disabled'}>${def.actionVerb}</button>`;
+    const status = '';
     const outputUpgrades = state.purchasedUpgrades
       .map(id => upgradeDefs.find(u => u.id === id))
       .filter(u => u && u.effectType === 'generator_multiply' && u.targetGeneratorId === def.id);
+    const speedUpgrades = state.purchasedUpgrades
+      .map(id => upgradeDefs.find(u => u.id === id))
+      .filter(u => u && u.effectType === 'generator_speed_multiply' && u.targetGeneratorId === def.id);
+    const speedBadges = speedUpgrades.map(u => `<span class="badge" data-tip="${escAttr(`${u.description}\n${describeUpgradeEffect(u)}`)}" data-tip-img="images/${u.id}.png">${u.name}</span>`).join(' ');
+    const globalSpeedMult = state.globalSpeedMultiplier || 1;
+    const globalSpeedUpgrades = state.purchasedUpgrades
+      .map(id => upgradeDefs.find(u => u.id === id))
+      .filter(u => u && u.effectType === 'all_generators_speed_multiply');
+    const globalSpeedTip = globalSpeedUpgrades.map(u => `${u.name} (×${u.effectValue})`).join('\n');
+    const globalSpeedBadge = globalSpeedMult > 1 ? `<span class="badge" data-tip="${escAttr(globalSpeedTip)}">×${formatNumber(globalSpeedMult)} global</span>` : '';
     const milestoneMult = getMilestoneMultiplier(gen.owned);
+    const achievedMilestones = GENERATOR_MILESTONES.filter(m => gen.owned >= m.count);
+    const milestoneTipParts = [achievedMilestones.length > 1 ? 'Milestones:' : 'Milestone:', ...achievedMilestones.map(m => `${m.count}/${m.count} = output x${m.multiplier}`)];
     const milestoneBadge = milestoneMult > 1
-      ? `<span class="badge" style="color:var(--green);border-color:var(--green);">×${formatNumber(milestoneMult)} ideas</span>`
+      ? `<span class="badge" data-tip="${escAttr(milestoneTipParts.join('\n'))}">×${formatNumber(milestoneMult)} ideas</span>`
       : '';
     const outputBadges = [
       milestoneBadge,
-      ...outputUpgrades.map(u => `<span class="badge">×${formatNumber(u.effectValue)} ${u.name}</span>`)
+      ...outputUpgrades.map(u => `<span class="badge" data-tip="${escAttr(`${u.description}\n${describeUpgradeEffect(u)}`)}" data-tip-img="images/${u.id}.png">${u.name}</span>`)
     ].filter(Boolean).join(' ');
-    return `<div class="generator-row ${gen.flashed ? 'flash' : ''}" id="generator-${def.id}">
-      <div class="gen-icon">${GENERATOR_EMOJI[def.id] || def.name.charAt(0)}</div>
+    return `<div class="generator-row" id="generator-${def.id}">
+      <div class="gen-icon"><img src="${GENERATOR_ICONS[def.id]}" alt="${def.name}"></div>
       <div class="gen-main">
         <div class="gen-top">
           <span class="gen-name">${gen.owned === 1 ? def.name : def.pluralName}</span>
-          <span class="gen-cycle-inline">+${formatNumber(ideasPerCycle)} ${ideasPerCycle < 2 ? 'idea' : 'ideas'}/cycle</span>
-          <span class="gen-owned-right">${formatNumber(gen.owned)}x</span>
+          <div class="gen-right-col">
+            <span class="gen-top-right">${outputBadges ? outputBadges + ' ' : ''}<span class="gen-owned-right">${formatNumber(gen.owned)}x</span> <span class="formula-op">=</span> <span class="gen-cycle-primary">+${formatNumber(ideasPerCycle)} ${ideasPerCycle < 2 ? 'idea' : 'ideas'}/cycle</span></span>
+          </div>
         </div>
-        ${outputBadges ? `<div style="margin:2px 0;">${outputBadges}</div>` : ''}
-        <div class="gen-desc">${def.description}</div>
-        <div class="gen-output">
-          <span class="gen-rate">+${formatNumber(rate, 2)} ideas/sec</span>
-          <span>·</span>
-          <span>${formatTime(cycle)} cycle${speedText}${status ? ' ' + status : ''}</span>
+        <div class="gen-desc-row">
+          <span class="gen-desc">${def.description}</span>
+          <span class="gen-milestone-right">${milestoneText}</span>
         </div>
         <div class="progress-shell ${fastCycle ? 'fast' : ''}"><div id="progress-fill-${def.id}" class="progress-fill" style="width:${fastCycle ? 100 : percent}%"></div></div>
+        <div class="gen-footer">
+          <div class="gen-output">
+            <span class="gen-rate">+${formatNumber(rate, 2)} ideas/sec</span>
+            <span>·</span>
+            <span>${formatTime(cycle)} cycle${speedBadges ? ' ' + speedBadges : ''}${globalSpeedBadge ? ' ' + globalSpeedBadge : ''}</span>
+          </div>
           <div class="gen-bottom">
-            <div class="timer">${milestoneText}</div>
             <div class="gen-actions">
               ${startButton}
-            <button class="btn ${affordable ? '' : 'need'}" data-action="buy-generator" data-generator-id="${def.id}" ${affordable ? '' : 'disabled'}>Add ${state.buyMode === 'max' ? Math.max(1, buyAmount) : state.buyMode}x<br>${money(cost)}</button>
+              <button class="btn ${affordable ? '' : 'need'}" data-action="buy-generator" data-generator-id="${def.id}" ${affordable ? '' : 'disabled'}>Add +${state.buyMode === 'max' ? Math.max(1, buyAmount) : state.buyMode}<br>${headerMoney(cost)}</button>
             </div>
           </div>
+        </div>
         </div>
     </div>`;
   }).join('');
   document.getElementById('generator-list').innerHTML = html || '<div class="empty">No generators visible yet.</div>';
 }
+function upgradeCardHtml(upg) {
+  const iconHtml = `<img class="upgrade-icon" src="images/${upg.id}.png" alt="">`;
+  return `<div class="upgrade-card">
+    <div class="upgrade-card-inner">
+      ${iconHtml}
+      <div class="upgrade-card-body">
+        <div class="upgrade-head">
+          <span class="upgrade-name">${upg.name}</span>
+        </div>
+        <div class="upgrade-desc">${upg.description}</div>
+        <div class="upgrade-effect">${describeUpgradeEffect(upg)}</div>
+      </div>
+    </div>
+    <button class="btn" data-action="buy-upgrade" data-upgrade-id="${upg.id}" ${canAfford(upg.cost) ? '' : 'disabled'}>Buy for ${headerMoney(upg.cost)}</button>
+  </div>`;
+}
 function renderUpgrades() {
   const visible = upgradeDefs.filter(isUpgradeUnlocked);
-  document.getElementById('upgrade-list').innerHTML = visible.length ? visible.map(upg => (
-    `<div class="upgrade-card">
-      <div class="upgrade-head">
-        <span class="upgrade-name">${upg.name}</span>
-        <span class="upgrade-cost">${money(upg.cost)}</span>
-      </div>
-      <div class="upgrade-desc">${upg.description}</div>
-      <div class="upgrade-effect">${describeUpgradeEffect(upg)}</div>
-      <button class="btn" data-action="buy-upgrade" data-upgrade-id="${upg.id}" ${canAfford(upg.cost) ? '' : 'disabled'}>Buy Upgrade</button>
-    </div>`
-  )).join('') : '<div class="empty">No upgrades available. Keep generating.</div>';
-}
-function updateClock() {
-  const now = new Date();
-  let h = now.getHours();
-  const m = String(now.getMinutes()).padStart(2, '0');
-  const ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  document.getElementById('clock').textContent = `${h}:${m} ${ap}`;
+  const next = visible[0];
+  document.getElementById('upgrade-list').innerHTML = next ? upgradeCardHtml(next) : '<div class="desk-card"><span style="color:#555;font-size:11px;">No upgrades available.</span></div>';
 }
 
 function serializeState() {
@@ -1470,7 +1692,6 @@ function animateProgressBars() {
 function init() {
   const loaded = loadGame();
   bindBoardControls();
-  updateClock();
   renderAll();
   if (!loaded) {
     log('The first idea arrived.');
@@ -1480,6 +1701,47 @@ function init() {
   requestAnimationFrame(animateProgressBars);
 }
 init();
+
+(function () {
+  const tip = document.createElement('div');
+  tip.id = 'tip';
+  document.body.appendChild(tip);
+
+  document.addEventListener('mousemove', function (e) {
+    const el = e.target.closest('[data-tip]');
+    if (!el) { tip.style.display = 'none'; return; }
+    const tipImg = el.dataset.tipImg;
+    tip.innerHTML = '';
+    if (tipImg) {
+      tip.style.display = 'flex';
+      tip.style.alignItems = 'flex-start';
+      tip.style.gap = '7px';
+      const img = document.createElement('img');
+      img.src = tipImg;
+      img.style.cssText = 'width:32px;height:32px;flex-shrink:0;image-rendering:pixelated;mix-blend-mode:multiply;';
+      const textEl = document.createElement('span');
+      textEl.style.whiteSpace = 'pre-line';
+      textEl.textContent = el.dataset.tip;
+      tip.appendChild(img);
+      tip.appendChild(textEl);
+    } else {
+      tip.style.display = 'block';
+      tip.textContent = el.dataset.tip;
+    }
+    const tw = tip.offsetWidth;
+    const th = tip.offsetHeight;
+    let x = e.clientX + 12;
+    let y = e.clientY - th - 8;
+    if (x + tw > window.innerWidth - 4) x = e.clientX - tw - 12;
+    if (y < 4) y = e.clientY + 16;
+    tip.style.left = x + 'px';
+    tip.style.top  = y + 'px';
+  });
+
+  document.addEventListener('mouseleave', function () {
+    tip.style.display = 'none';
+  });
+})();
 </script>
 </body>
 </html>
