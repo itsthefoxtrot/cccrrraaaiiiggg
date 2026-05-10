@@ -300,6 +300,14 @@ img {
 }
 .sidebar-search::placeholder { color: rgba(20, 33, 61, 0.35); }
 .sidebar-search:focus { border-bottom-color: #ea215a; }
+
+.sidebar-empty {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(20, 33, 61, 0.4);
+  padding: 0.2rem 0;
+  font-style: italic;
+}
 .sidebar-search:focus + .sidebar-search-icon,
 .sidebar-search-wrap:focus-within .sidebar-search-icon { color: #ea215a; }
 

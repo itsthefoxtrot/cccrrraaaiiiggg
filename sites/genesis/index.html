@@ -733,6 +733,7 @@ button, select { font: inherit; color: inherit; }
   <span class="menu-item" style="font-weight:bold;" onclick="showAboutModal()">Genesis</span>
   <span class="menu-item" onclick="saveGame(true)">Save</span>
   <span class="menu-item" onclick="resetGame()">New Game</span>
+  <span class="menu-item" id="mute-btn" onclick="Sfx.toggleMute()">🔊 Mute</span>
   <span id="save-indicator"></span>
 </div>
 
@@ -829,7 +830,7 @@ button, select { font: inherit; color: inherit; }
         <p style="margin-bottom:16px;">Have ideas - make money.</p>
         <p>Genesis is an idle clicker game about the compounding value of ideas. Can your shower thought become the next paradigm shift?</p>
         <p style="margin-top:10px;">More ideas = more money. The rest is admin.</p>
-        <p style="margin-top:16px;color:#555;font-size:11px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a> &nbsp;·&nbsp; v2.0.1</p>
+        <p style="margin-top:16px;color:#555;font-size:11px;">Built by <a href="https://cccrrraaaiiiggg.com/" target="_blank">Craig Johnson</a> &nbsp;·&nbsp; v2.0.2</p>
       </div>
       <button class="btn" style="margin-top:20px;" onclick="closeAboutModal()">OK</button>
     </div>
@@ -845,6 +846,21 @@ button, select { font: inherit; color: inherit; }
         <p id="offline-summary"></p>
       </div>
       <button class="btn" onclick="closeOfflineModal()">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="win-modal">
+  <div class="modal">
+    <div class="title"><span>The Last Paradigm</span></div>
+    <div class="body" style="text-align:center;">
+      <div>
+        <h2 style="margin-top:16px;margin-bottom:8px;">Congratulations.</h2>
+        <p style="margin-bottom:10px;">You came up with all the ideas.</p>
+        <p style="color:#555;font-size:11px;">Every generator maxed. Every upgrade acquired.</p>
+        <p style="margin-top:8px;color:#555;font-size:11px;">The idea is now what everyone assumes.</p>
+      </div>
+      <button class="btn" style="margin-top:20px;" onclick="closeWinModal()">OK</button>
     </div>
   </div>
 </div>
@@ -984,6 +1000,7 @@ function createInitialState() {
     chronicle: [],
     seenIdeaMilestones: [],
     firstIdeaLogged: false,
+    wonGame: false,
     lastSavedAt: Date.now()
   };
 }
@@ -1173,6 +1190,7 @@ function buyGenerator(id) {
   gen.owned += amount;
   if (oldOwned === 0) log(`The first ${def.name} took shape.`);
   checkGeneratorMilestones(def, oldOwned, gen.owned);
+  Sfx.cash();
   renderAll();
 }
 function startGenerator(id) {
@@ -1186,6 +1204,7 @@ function startGenerator(id) {
     gen.owned = 1;
     log(`The first ${def.name} took shape.`);
     checkGeneratorMilestones(def, 0, 1);
+    Sfx.cash();
   }
   gen.isRunning = true;
   gen.runningLabel = THINKING_LABELS[Math.floor(Math.random() * THINKING_LABELS.length)];
@@ -1198,6 +1217,8 @@ function buyUpgrade(id) {
   state.purchasedUpgrades.push(id);
   applyUpgrade(upg);
   log(`${upg.name} acquired.`);
+  Sfx.upgrade();
+  checkWinCondition();
   renderAll();
 }
 function applyUpgrade(upg) {
@@ -1265,6 +1286,8 @@ function checkGeneratorMilestones(def, oldOwned, newOwned) {
   GENERATOR_MILESTONES.forEach(m => {
     if (oldOwned < m.count && newOwned >= m.count) {
       log(`${def.name} reached ${m.count} owned. Output filed at x${m.multiplier}.`);
+      Sfx.milestone();
+      checkWinCondition();
     }
   });
 }
@@ -1273,6 +1296,7 @@ function checkUnlockLogs() {
     if (state.ideas >= m.pop && !state.seenIdeaMilestones.includes(m.pop)) {
       state.seenIdeaMilestones.push(m.pop);
       log(m.text);
+      Sfx.milestone();
     }
   });
   const movement = state.generators.movement;
@@ -1286,6 +1310,83 @@ function checkUnlockLogs() {
     log('The first Paradigm established. The idea was now assumed.');
   }
 }
+// ── Sound engine ───────────────────────────────────────────────────────
+const Sfx = (() => {
+  let _ctx = null;
+  let muted = localStorage.getItem('genesis_muted') === '1';
+
+  // Pentatonic scale C4–A5 — always harmonious
+  const PENTA = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 784.00, 880.00];
+
+  function ctx() {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_ctx.state === 'suspended') _ctx.resume();
+    return _ctx;
+  }
+
+  function tone(freq, dur, vol, delay = 0, type = 'sine') {
+    if (muted) return;
+    const c = ctx();
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = c.currentTime + delay;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(g);
+    g.connect(c.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  }
+
+  // Accumulator for rate-limited idea chimes
+  let ideaAccum = 0;
+
+  function ideaTick(rate, delta) {
+    if (muted || rate <= 0) return;
+    const cappedRate = Math.min(rate, 16);
+    ideaAccum += cappedRate * delta;
+    if (ideaAccum >= 1) {
+      ideaAccum -= 1;
+      // Shift up the pentatonic scale as rate increases
+      const tier = Math.min(Math.floor(rate / 5), PENTA.length - 3);
+      const freq = PENTA[tier + Math.floor(Math.random() * 3)];
+      // Quieter at high rates so it doesn't overwhelm
+      const vol = Math.max(0.06, 0.16 - (cappedRate / 16) * 0.08);
+      tone(freq, 0.32, vol);
+    }
+  }
+
+  function cash() {
+    tone(1318.51, 0.7, 0.18, 0,    'sine');
+    tone(1046.50, 0.6, 0.12, 0.02, 'sine');
+  }
+
+  function upgrade() {
+    [261.63, 329.63, 523.25, 659.25].forEach((f, i) => tone(f, 0.55, 0.2, i * 0.07));
+  }
+
+  function milestone() {
+    [261.63, 329.63, 392.00, 523.25].forEach((f, i) => tone(f, 1.1, 0.22, i * 0.06));
+    tone(784.00, 0.9, 0.18, 0.36);
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    localStorage.setItem('genesis_muted', muted ? '1' : '0');
+    document.getElementById('mute-btn').textContent = muted ? '🔇 Unmute' : '🔊 Mute';
+  }
+
+  function initBtn() {
+    const btn = document.getElementById('mute-btn');
+    if (btn) btn.textContent = muted ? '🔇 Unmute' : '🔊 Mute';
+  }
+
+  return { ideaTick, cash, upgrade, milestone, toggleMute, initBtn };
+})();
+
 function tick() {
   const now = Date.now();
   const delta = Math.min((now - lastTick) / 1000, 0.25);
@@ -1293,6 +1394,7 @@ function tick() {
   gameSeconds += delta;
   updateMoney(delta);
   updateGenerators(delta);
+  Sfx.ideaTick(getTotalIdeaRate(), delta);
   checkUnlockLogs();
   renderCounter++;
   if (renderCounter % 2 === 0) renderTopStats();
@@ -1551,10 +1653,21 @@ function upgradeCardHtml(upg) {
     <button class="btn" data-action="buy-upgrade" data-upgrade-id="${upg.id}" ${canAfford(upg.cost) ? '' : 'disabled'}>Buy for ${headerMoney(upg.cost)}</button>
   </div>`;
 }
+let _shownUpgradeId = null;
 function renderUpgrades() {
-  const visible = upgradeDefs.filter(isUpgradeUnlocked);
-  const next = visible[0];
-  document.getElementById('upgrade-list').innerHTML = next ? upgradeCardHtml(next) : '<div class="desk-card"><span style="color:#555;font-size:11px;">No upgrades available.</span></div>';
+  const available = upgradeDefs.filter(isUpgradeUnlocked);
+  // Keep the current upgrade on screen until it is purchased
+  if (_shownUpgradeId && available.find(u => u.id === _shownUpgradeId)) {
+    const upg = upgradeDefs.find(u => u.id === _shownUpgradeId);
+    document.getElementById('upgrade-list').innerHTML = upgradeCardHtml(upg);
+    return;
+  }
+  // Advance to the next in sequence
+  const next = available[0] ?? null;
+  _shownUpgradeId = next ? next.id : null;
+  document.getElementById('upgrade-list').innerHTML = next
+    ? upgradeCardHtml(next)
+    : '<div class="desk-card"><span style="color:#555;font-size:11px;">No upgrades available.</span></div>';
 }
 
 function serializeState() {
@@ -1574,7 +1687,8 @@ function serializeState() {
       purchasedUpgrades: state.purchasedUpgrades,
       chronicle: state.chronicle,
       seenIdeaMilestones: state.seenIdeaMilestones,
-      firstIdeaLogged: state.firstIdeaLogged
+      firstIdeaLogged: state.firstIdeaLogged,
+      wonGame: state.wonGame
     }
   };
 }
@@ -1653,6 +1767,22 @@ function confirmReset() {
 function closeResetModal() {
   document.getElementById('reset-modal').classList.remove('show');
 }
+function checkWinCondition() {
+  if (state.wonGame) return;
+  const allUpgradesPurchased = upgradeDefs.every(u => state.purchasedUpgrades.includes(u.id));
+  const maxMilestone = GENERATOR_MILESTONES[GENERATOR_MILESTONES.length - 1].count;
+  const allMilestoned = generatorDefs.every(def => (state.generators[def.id]?.owned ?? 0) >= maxMilestone);
+  if (allUpgradesPurchased && allMilestoned) {
+    state.wonGame = true;
+    saveGame(false);
+    Sfx.milestone();
+    setTimeout(() => Sfx.milestone(), 600);
+    document.getElementById('win-modal').classList.add('show');
+  }
+}
+function closeWinModal() {
+  document.getElementById('win-modal').classList.remove('show');
+}
 function bindBoardControls() {
   document.getElementById('buy-mode-buttons').addEventListener('pointerdown', event => {
     const button = event.target.closest('button[data-buy-mode]');
@@ -1692,6 +1822,7 @@ function animateProgressBars() {
 function init() {
   const loaded = loadGame();
   bindBoardControls();
+  Sfx.initBtn();
   renderAll();
   if (!loaded) {
     log('The first idea arrived.');

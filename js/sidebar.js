@@ -1,4 +1,4 @@
-const LAST_UPDATED = '05/2026';
+const LAST_UPDATED = 'May 2026';
 
 const PROJECTS = [
   { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/average/index.html',                               tags: ['interactive', 'tool', 'data visualisation', 'mortality', 'life expectancy', 'website'] },
@@ -17,7 +17,7 @@ const PROJECTS = [
   { title: 'Untitled',                                   slug: 'untitled',           path: 'projects/untitled/untitled.html',                        tags: ['painting', 'fine art', 'acrylic', 'abstract'] },
   { title: 'The Lanf',                                   slug: 'the-lanf',           path: 'projects/the-lanf/the-lanf.html',                        tags: ['sculpture', 'mask', 'mixed media', 'fine art', 'papier-mache'] },
   { title: 'Seabed',                                     slug: 'seabed',             path: 'projects/seabed/seabed.html',                            tags: ['music', 'ambient', 'soundscape', 'experimental', 'iceland', 'reykjavik'] },
-  { title: 'The Walking Fork OST',                       slug: 'walking-fork',       path: 'projects/walking-fork/walking-fork.html',                tags: ['music', 'experimental', 'synthesizer', 'soundtrack', 'ost'] },
+  { title: 'The Walking Fork',                           slug: 'walking-fork',       path: 'projects/walking-fork/walking-fork.html',                tags: ['music', 'experimental', 'synthesizer', 'soundtrack', 'ost'] },
   { title: 'Start to Finish',                            slug: 'starttofinish',      path: 'projects/starttofinish/starttofinish.html',              tags: ['music', 'ambient', 'album', 'wellington', 'new zealand'] },
   { title: 'Slink to Sleep',                             slug: 'slink',              path: 'projects/slink/slink.html',                              tags: ['music', 'ambient', 'album', 'wellington', 'new zealand', 'soundtrack', 'iceland'] },
   { title: 'Field Recordings',                           slug: 'field-recordings',   path: 'projects/field-recordings/field-recordings.html',        tags: ['music', 'field recordings', 'ambient', 'sound art', 'environmental', 'acoustic ecology'] },
@@ -62,10 +62,11 @@ class SiteSidebar extends HTMLElement {
   </div>
   <div class="sidebar-search-wrap">
     <i class="fas fa-search sidebar-search-icon"></i>
-    <input class="sidebar-search" type="search" placeholder="Search…" aria-label="Search projects">
+    <input class="sidebar-search" type="search" placeholder="Find a project…" aria-label="Search projects">
   </div>
   <nav class="sidebar-projects">
         ${projectLinks}
+        <span class="sidebar-empty" style="display:none;">I've got nothing like that… yet.</span>
   </nav>
   <nav class="sidebar-nav">
     ${link('about',        `${root}/about.html`,        'About')}
@@ -83,15 +84,20 @@ class SiteSidebar extends HTMLElement {
 
     const sidebar = parent.querySelector('aside.sidebar');
 
-    const search = sidebar.querySelector('.sidebar-search');
-    const links  = sidebar.querySelectorAll('.sidebar-projects .sidebar-link');
+    const search  = sidebar.querySelector('.sidebar-search');
+    const links   = sidebar.querySelectorAll('.sidebar-projects .sidebar-link');
+    const empty   = sidebar.querySelector('.sidebar-empty');
     search.addEventListener('input', () => {
       const q = search.value.trim().toLowerCase();
+      let anyVisible = false;
       links.forEach(a => {
         const textMatch = a.textContent.toLowerCase().includes(q);
         const tagMatch  = (a.dataset.tags || '').toLowerCase().includes(q);
-        a.style.display = !q || textMatch || tagMatch ? '' : 'none';
+        const visible   = !q || textMatch || tagMatch;
+        a.style.display = visible ? '' : 'none';
+        if (visible) anyVisible = true;
       });
+      empty.style.display = q && !anyVisible ? '' : 'none';
     });
 
     const toggle = document.createElement('button');
