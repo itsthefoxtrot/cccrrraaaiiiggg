@@ -251,7 +251,15 @@ function openInfo() {
     const pctLeft     = (100 - parseFloat(pctUsed)).toFixed(1);
     const lifespan    = LIFE_EXPECTANCY[selectedCountry] || 73;
 
+    const now = new Date();
+    let ageY = now.getFullYear() - birthDate.getFullYear();
+    let ageM = now.getMonth()   - birthDate.getMonth();
+    let ageD = now.getDate()    - birthDate.getDate();
+    if (ageD < 0) { ageM--; ageD += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+    if (ageM < 0) { ageY--; ageM += 12; }
+
     document.getElementById('info-dob').textContent       = fmt(birthDate);
+    document.getElementById('info-age').textContent       = `${ageY} years, ${ageM} months, ${ageD} days`;
     document.getElementById('info-country').textContent   = selectedCountry;
     document.getElementById('info-lifespan').textContent  = lifespan + ' years';
     document.getElementById('info-today').textContent     = fmt(new Date());
