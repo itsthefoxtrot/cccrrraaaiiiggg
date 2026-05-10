@@ -1,0 +1,7 @@
+name = "tiyl-estimate"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[[kv_namespaces]]
+binding = "RL"
+id = "8bf3782d6abd41f3bc73358f24eb5c3d"

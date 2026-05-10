@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Life, Maybe</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗓️</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0ede6;
+  color: #111;
+  --wk-w: 12px;
+  --wk-h: 12px;
+  --wk-gap-x: 3px;
+  --wk-gap-y: 2px;
+}
+
+/* ── ONBOARDING ─────────────────────────────────────────────────────────── */
+#onboarding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+.ob-card {
+  background: #fff;
+  border: 1px solid #d5d0c8;
+  border-radius: 10px;
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+.ob-card h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; }
+.ob-tagline { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 28px; }
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.6px; color: #888; margin-bottom: 5px;
+}
+.field input, .field select {
+  width: 100%; height: 38px; padding: 9px 36px 9px 11px; border: 1px solid #d5d0c8;
+  border-radius: 5px; font-family: inherit; font-size: 13px; font-weight: 400;
+  line-height: 1.25; color: #111; background: #f7f5f0;
+  outline: none; appearance: none;
+}
+.field input[type="date"] { padding-right: 11px; }
+.field select {
+  background-image: linear-gradient(45deg, transparent 50%, #777 50%), linear-gradient(135deg, #777 50%, transparent 50%);
+  background-position: calc(100% - 17px) 16px, calc(100% - 12px) 16px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.field input:focus, .field select:focus { border-color: #111; background: #fff; }
+.ob-error { font-size: 12px; color: #c0392b; margin: 8px 0 4px; min-height: 16px; }
+.ob-btn {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(#f9f8f5, #e5e1d8);
+  color: #333;
+  border: 1px solid #bdb7ad;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  margin-top: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.ob-btn:hover {
+  background: linear-gradient(#fff, #ddd8ce);
+  border-color: #aaa297;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.09), 0 6px 14px rgba(0,0,0,0.1);
+}
+.ob-btn:active {
+  transform: translateY(1px);
+  background: linear-gradient(#ded9cf, #f4f2ed);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ── APP ────────────────────────────────────────────────────────────────── */
+#app { display: none; height: 100vh; overflow: hidden; }
+#app.on { display: flex; }
+
+/* ── SIDEBAR ────────────────────────────────────────────────────────────── */
+#sidebar {
+  width: 390px; flex-shrink: 0;
+  background: #e8e4dc; border-right: 1px solid #d0ccc4;
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+.sb-head { padding: 16px 16px 14px; border-bottom: 1px solid #d0ccc4; }
+.sb-age { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+.sb-info { margin-top: 10px; }
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.stat-label { color: #555; white-space: nowrap; }
+.stat-value {
+  color: #000;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sb-sec { padding: 13px 16px; border-bottom: 1px solid #d0ccc4; }
+.sb-sec-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: #888; margin-bottom: 9px;
+}
+.add-row { display: flex; gap: 5px; }
+.add-row input {
+  flex: 1; padding: 8px 10px; border: 1px solid #c6c1b8;
+  border-radius: 5px; font-size: 12px; background: #fff; outline: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 1px 0 rgba(255,255,255,0.75);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.add-row input:focus {
+  border-color: #111;
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 2px rgba(17,17,17,0.08), 0 3px 9px rgba(0,0,0,0.08);
+}
+.add-row button {
+  padding: 8px 12px;
+  background: linear-gradient(#f9f8f5, #e5e1d8);
+  color: #333;
+  border: 1px solid #bdb7ad;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.add-row button:hover {
+  background: linear-gradient(#fff, #ddd8ce);
+  border-color: #aaa297;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.09), 0 6px 14px rgba(0,0,0,0.1);
+}
+.add-row button:active {
+  transform: translateY(1px);
+  background: linear-gradient(#ded9cf, #f4f2ed);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.08);
+}
+#proj-list { flex: 1; overflow-y: auto; padding: 10px 12px; }
+.no-projs { font-size: 11px; color: #aaa; padding: 6px 0; line-height: 1.55; }
+
+.pcard {
+  background: linear-gradient(#fff, #fbfaf7);
+  border: 1px solid #c7c2b8;
+  border-radius: 7px;
+  padding: 10px 11px; margin-bottom: 9px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 6px 14px rgba(0,0,0,0.06);
+}
+.pcard.is-placing {
+  border-color: #111;
+  box-shadow: 0 0 0 1px #111, 0 7px 16px rgba(0,0,0,0.12);
+}
+.pc-top { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
+.pdot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.pname { font-size: 12px; font-weight: 600; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.px-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 15px; line-height: 1; padding: 0 1px; }
+.px-btn:hover { color: #c0392b; }
+.pmeta { font-size: 11px; color: #888; margin-bottom: 7px; }
+.pplace {
+  width: 100%; padding: 5px 8px; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.3px;
+  background: linear-gradient(#f9f8f5, #e5e1d8);
+  border: 1px solid #bdb7ad;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #333;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.pplace:hover {
+  background: linear-gradient(#fff, #ddd8ce);
+  border-color: #aaa297;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.09), 0 6px 14px rgba(0,0,0,0.1);
+}
+.pplace:active {
+  transform: translateY(1px);
+  background: linear-gradient(#ded9cf, #f4f2ed);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.08);
+}
+.pplace.on {
+  background: linear-gradient(#f6f4ee, #d8d2c7);
+  color: #222;
+  border-color: #8f877c;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06), 0 0 0 1px rgba(17,17,17,0.18), 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.sb-foot {
+  padding: 11px 16px; border-top: 1px solid #d0ccc4;
+  font-size: 11px; color: #888;
+}
+.sb-foot a { color: #888; text-decoration: underline; cursor: pointer; }
+.sb-foot a:hover { color: #c0392b; }
+
+/* ── GRID AREA ───────────────────────────────────────────────────────────── */
+#grid-area { flex: 1; overflow: auto; padding: 18px 20px 18px 56px; }
+.grid-top { margin-bottom: 10px; }
+.grid-top h1 { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
+.grid-top p { font-size: 12px; color: #666; }
+.legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
+.leg-sq { width: 9px; height: 9px; border-radius: 1px; flex-shrink: 0; }
+.project-status { margin-left: auto; font-size: 11px; color: #888; }
+#place-hint { font-size: 11px; font-weight: 600; color: #111; display: none; }
+
+/* ── WEEK GRID ───────────────────────────────────────────────────────────── */
+#week-grid { user-select: none; }
+.grid-row { display: flex; align-items: center; margin-bottom: var(--wk-gap-y); position: relative; }
+.grid-row:last-child { margin-bottom: 0; }
+.yr-lbl {
+  position: absolute; right: calc(100% + 8px);
+  width: 28px; font-size: 10px; color: #444; text-align: right;
+  height: var(--wk-h); line-height: var(--wk-h);
+  flex-shrink: 0; font-variant-numeric: tabular-nums;
+}
+.yr-lbl.past { color: #c8c4bc; }
+.cells { display: flex; gap: var(--wk-gap-x); }
+.wk {
+  width: var(--wk-w);
+  height: var(--wk-h);
+  border-radius: 2px;
+  flex-shrink: 0;
+  cursor: default;
+  border: 1px solid rgba(0,0,0,0.18);
+}
+.wk.past { background: #dedbd4; border-color: #dedbd4; }
+.wk.now { background: #111; border-color: #000; }
+.wk.future { background: #fff; border-color: #9a9a9a; }
+.wk.proj { border-color: rgba(0,0,0,0.2); }
+.wk.preview { opacity: 0.5; }
+
+body.placing #week-grid { cursor: crosshair; }
+
+#grid-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: #111;
+  color: #fff;
+  border-radius: 5px;
+  padding: 7px 10px;
+  font-size: 11px;
+  line-height: 1.6;
+  display: none;
+  z-index: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+#grid-tooltip strong { font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-card">
+    <p class="ob-tagline">Every week of your life, laid out as a grid. See how much is left - then decide what you'll do with it.</p>
+    <div class="field">
+      <label>Your date of birth</label>
+      <input type="date" id="f-dob">
+    </div>
+    <div class="field">
+      <label>Country of Residence</label>
+      <select id="f-country"><option value="">Select country…</option></select>
+    </div>
+    <div class="ob-error" id="ob-err"></div>
+    <button class="ob-btn" onclick="startApp()">See your life →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside id="sidebar">
+    <div class="sb-head">
+      <div class="sb-age" id="sb-age"></div>
+      <div class="sb-info" id="sb-info"></div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">Plan a project</div>
+      <div class="add-row">
+        <input type="text" id="proj-input" placeholder="e.g. write a book" onkeydown="if(event.key==='Enter')addProject()">
+        <button onclick="addProject()">Add</button>
+      </div>
+    </div>
+    <div id="proj-list"></div>
+
+    <div class="sb-foot">
+      <span id="sb-foot-txt"><a onclick="resetApp()">Start again</a></span>
+    </div>
+  </aside>
+
+  <div id="grid-area">
+    <div class="grid-top">
+      <h1>Your life in weeks</h1>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-sq" style="background:#dedbd4;border:1px solid #dedbd4"></div>Lived</div>
+      <div class="leg"><div class="leg-sq" style="background:#111;border:1px solid #000"></div>This week</div>
+      <div class="leg"><div class="leg-sq" style="background:#fff;border:1px solid #9a9a9a"></div>Remaining</div>
+      <div class="project-status" id="project-status"></div>
+      <div id="place-hint">↑ Click any future week to place · Esc to cancel</div>
+    </div>
+    <div id="week-grid"></div>
+  </div>
+</div>
+<div id="grid-tooltip"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const LE = {
+  'Afghanistan':64.8,'Albania':78.5,'Algeria':77.1,'Argentina':76.6,
+  'Australia':83.2,'Austria':81.0,'Bangladesh':73.6,'Belgium':81.0,
+  'Bolivia':71.5,'Brazil':75.9,'Canada':82.3,'Chile':80.2,
+  'China':78.2,'Colombia':77.3,'Croatia':78.5,'Cuba':78.9,
+  'Czech Republic':78.5,'Denmark':81.0,'Ecuador':77.6,'Egypt':72.0,
+  'Ethiopia':67.6,'Finland':81.0,'France':82.5,'Germany':81.1,
+  'Ghana':64.1,'Greece':82.2,'Guatemala':74.3,'Hungary':76.7,
+  'Iceland':82.9,'India':70.8,'Indonesia':71.7,'Iran':76.7,
+  'Iraq':70.6,'Ireland':82.1,'Israel':82.6,'Italy':83.0,
+  'Japan':84.3,'Jordan':74.8,'Kazakhstan':73.6,'Kenya':67.0,
+  'Luxembourg':82.4,'Malaysia':76.4,'Mexico':75.0,'Morocco':74.8,
+  'Mozambique':60.2,'Netherlands':82.3,'New Zealand':82.1,'Nigeria':55.2,
+  'Norway':83.0,'Pakistan':67.2,'Peru':77.0,'Philippines':71.2,
+  'Poland':78.0,'Portugal':81.0,'Romania':75.0,'Russia':72.4,
+  'Saudi Arabia':76.9,'Singapore':83.1,'South Africa':64.0,
+  'South Korea':83.3,'Spain':83.2,'Sudan':65.7,'Sweden':82.6,
+  'Switzerland':83.4,'Tanzania':67.4,'Thailand':77.2,'Turkey':78.0,
+  'Uganda':63.4,'Ukraine':73.0,'United Kingdom':81.3,
+  'United States':78.9,'Venezuela':72.1,'Vietnam':75.4,
+  'World Average':73.3,'Zimbabwe':61.2,
+};
+
+const TEMPLATES = [
+  // Writing
+  { kw:['book','novel','memoir','autobiography'],                                                        name:'Write a book',               weeks:78  },
+  { kw:['short story','short fiction'],                                                                  name:'Write a short story',        weeks:4   },
+  { kw:['screenplay','script','pilot'],                                                                  name:'Write a screenplay',         weeks:26  },
+  { kw:['blog','newsletter','substack'],                                                                 name:'Start a newsletter',         weeks:13  },
+  { kw:['comic','graphic novel','manga'],                                                                name:'Create a graphic novel',     weeks:52  },
+  // Sport & fitness
+  { kw:['ironman'],                                                                                      name:'Complete an Ironman',        weeks:52  },
+  { kw:['triathlon'],                                                                                    name:'Complete a triathlon',       weeks:26  },
+  { kw:['marathon','26.2'],                                                                              name:'Train for a marathon',       weeks:18  },
+  { kw:['half marathon','13.1'],                                                                         name:'Train for a half marathon',  weeks:12  },
+  { kw:['10k','10km'],                                                                                   name:'Train for a 10K',            weeks:8   },
+  { kw:['5k','5km','couch to 5'],                                                                        name:'Train for a 5K',             weeks:8   },
+  { kw:['cycling','cycle','gran fondo'],                                                                 name:'Train for a cycling event',  weeks:18  },
+  { kw:['swim','swimming','open water'],                                                                 name:'Learn to swim competitively',weeks:26  },
+  { kw:['gym','weights','weightlift','strength train'],                                                  name:'Build a gym routine',        weeks:26  },
+  { kw:['lose weight','diet','weight loss'],                                                             name:'Lose weight',                weeks:26  },
+  { kw:['climb','climbing','mountaineer'],                                                               name:'Learn to climb',             weeks:26  },
+  // Education
+  { kw:['degree','uni','university','undergrad','bachelor','college'],                                   name:'Get a degree',               weeks:182 },
+  { kw:['masters','msc','mba','postgrad'],                                                               name:'Get a masters',              weeks:91  },
+  { kw:['phd','doctorate','thesis','dissertation'],                                                      name:'Complete a PhD',             weeks:260 },
+  { kw:['bootcamp','code bootcamp','coding bootcamp'],                                                   name:'Complete a bootcamp',        weeks:13  },
+  { kw:['certification','certificate','certified'],                                                      name:'Get certified',              weeks:13  },
+  { kw:['online course','mooc','udemy','coursera'],                                                      name:'Complete a course',          weeks:8   },
+  { kw:['driving','learn to drive','drivers licence','drivers license'],                                 name:'Learn to drive',             weeks:6   },
+  { kw:['learn to code','coding','programming'],                                                         name:'Learn to code',              weeks:26  },
+  // Language
+  { kw:['language','french','spanish','german','japanese','mandarin','arabic','portuguese','italian','korean','russian','hindi'], name:'Learn a language', weeks:104 },
+  // Music
+  { kw:['album','record an','ep','release music'],                                                       name:'Record an album',            weeks:52  },
+  { kw:['instrument','guitar','piano','drums','violin','bass','ukulele','trumpet','cello'],               name:'Learn an instrument',        weeks:78  },
+  { kw:['dj','djing','mixing','turntables'],                                                             name:'Learn to DJ',                weeks:26  },
+  { kw:['music production','produce music','beat making','fl studio','ableton'],                         name:'Learn music production',     weeks:52  },
+  // Tech & business
+  { kw:['mobile app','ios app','android app'],                                                           name:'Build a mobile app',         weeks:39  },
+  { kw:['app','saas','software product'],                                                                name:'Build an app',               weeks:26  },
+  { kw:['website','web app'],                                                                            name:'Build a website',            weeks:8   },
+  { kw:['startup','company','venture'],                                                                  name:'Start a business',           weeks:156 },
+  { kw:['business','small business'],                                                                    name:'Start a business',           weeks:78  },
+  { kw:['freelance','go freelance','freelancing'],                                                       name:'Go freelance',               weeks:26  },
+  { kw:['ecommerce','online shop','etsy','shopify','sell online'],                                       name:'Start an online shop',       weeks:13  },
+  { kw:['game','indie game','video game'],                                                               name:'Develop a game',             weeks:78  },
+  { kw:['podcast'],                                                                                      name:'Start a podcast',            weeks:26  },
+  { kw:['youtube','channel','vlog'],                                                                     name:'Start a YouTube channel',    weeks:26  },
+  // Creative
+  { kw:['film','movie','documentary','short film'],                                                      name:'Make a film',                weeks:52  },
+  { kw:['paint','painting','art series','exhibition'],                                                   name:'Create an art series',       weeks:52  },
+  { kw:['photography','photo project','photo book'],                                                     name:'Complete a photo project',   weeks:26  },
+  { kw:['design portfolio','portfolio'],                                                                 name:'Build a design portfolio',   weeks:13  },
+  { kw:['sculpture','ceramics','pottery'],                                                               name:'Learn sculpture',            weeks:26  },
+  { kw:['draw','drawing','illustration'],                                                                name:'Learn to draw',              weeks:26  },
+  // Life
+  { kw:['travel the world','backpack','sabbatical','gap year'],                                          name:'Travel the world',           weeks:52  },
+  { kw:['build a house','renovate','renovation'],                                                        name:'Build a house',              weeks:104 },
+  { kw:['move country','relocate','emigrate'],                                                           name:'Relocate',                   weeks:8   },
+  { kw:['wedding','get married','plan a wedding'],                                                       name:'Plan a wedding',             weeks:52  },
+  { kw:['baby','pregnancy','pregnant'],                                                                  name:'Have a baby',                weeks:40  },
+  { kw:['adopt','adoption'],                                                                             name:'Adopt a child',              weeks:78  },
+  { kw:['garden','gardening','allotment','grow'],                                                        name:'Grow a garden',              weeks:26  },
+  { kw:['cook','cooking','chef','culinary'],                                                             name:'Learn to cook well',         weeks:26  },
+  { kw:['meditat','mindfulness','yoga','breathwork'],                                                    name:'Build a daily practice',     weeks:26  },
+  { kw:['journal','journaling','diary'],                                                                 name:'Build a journaling habit',   weeks:8   },
+  { kw:['read more','reading habit','read every'],                                                       name:'Build a reading habit',      weeks:13  },
+  { kw:['quit smoking','stop smoking','quit drinking','sobriety','sober'],                               name:'Quit an addiction',          weeks:13  },
+  { kw:['therapy','counselling','counseling'],                                                           name:'Start therapy',              weeks:52  },
+  { kw:['invest','investing','stock','etf'],                                                             name:'Learn to invest',            weeks:26  },
+  { kw:['volunteer','volunteering'],                                                                     name:'Start volunteering',         weeks:13  },
+  { kw:['nonprofit','charity','foundation'],                                                             name:'Start a nonprofit',          weeks:78  },
+];
+
+const COLORS = [
+  '#6fa3ff','#ff7f7f','#72d6a3','#ffc44f','#ad86ff','#62d2e5',
+  '#ffa463','#b2df5f','#ef7fbb','#66ccb6','#8d99ff','#cc84e8',
+];
+
+const SAVE_KEY = 'tiyl_v2';
+const MS_DAY   = 24 * 60 * 60 * 1000;
+const MS_WEEK  = 7 * MS_DAY;
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+let S = { dob: null, country: null, le: null, projects: [], nextColor: 0 };
+let placing     = null;
+let previewFrom = -1;
+let cellMap     = {};
+
+// ── COMPUTED ──────────────────────────────────────────────────────────────────
+
+const totalWeeks  = () => Math.round(S.le * 52);
+const weeksLived  = () => Math.floor((Date.now() - new Date(S.dob)) / MS_WEEK);
+const weeksLeft   = () => Math.max(0, totalWeeks() - weeksLived());
+const totalDays   = () => Math.round(S.le * 365);
+
+function parseDob() {
+  const [y, m, d] = S.dob.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function startOfDay(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function daysLived() {
+  return Math.floor((startOfDay(new Date()) - parseDob()) / MS_DAY);
+}
+
+function daysLeft() {
+  return Math.max(0, totalDays() - daysLived());
+}
+
+function currentAge() {
+  const d = parseDob(), n = new Date();
+  let a = n.getFullYear() - d.getFullYear();
+  if (n.getMonth() < d.getMonth() || (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())) a--;
+  return a;
+}
+
+function detailedAge() {
+  const d = parseDob();
+  const n = startOfDay(new Date());
+  let years = n.getFullYear() - d.getFullYear();
+  let months = n.getMonth() - d.getMonth();
+  let days = n.getDate() - d.getDate();
+
+  if (days < 0) {
+    months--;
+    days += new Date(n.getFullYear(), n.getMonth(), 0).getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  return `${years} years, ${months} months, ${days} days`;
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+function init() {
+  const sel = document.getElementById('f-country');
+  Object.keys(LE).sort().forEach(c => {
+    const o = document.createElement('option');
+    o.value = o.textContent = c;
+    sel.appendChild(o);
+  });
+  document.getElementById('f-dob').max = new Date().toISOString().slice(0, 10);
+
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if (saved) { S = JSON.parse(saved); showApp(); }
+  } catch(e) {}
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────────────────────
+
+function startApp() {
+  const dob     = document.getElementById('f-dob').value;
+  const country = document.getElementById('f-country').value;
+  const err     = document.getElementById('ob-err');
+  if (!dob)              { err.textContent = 'Please enter your date of birth.'; return; }
+  if (new Date(dob) >= new Date()) { err.textContent = 'Date of birth must be in the past.'; return; }
+  if (!country)          { err.textContent = 'Please select your country.'; return; }
+  err.textContent = '';
+  S = { dob, country, le: LE[country] || 73.3, projects: [], nextColor: 0 };
+  save();
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').classList.add('on');
+  renderAll();
+  bindGrid();
+}
+
+function resetApp() {
+  const foot = document.getElementById('sb-foot-txt');
+  foot.innerHTML = 'Start again? <a onclick="doReset()">Yes</a> / <a onclick="renderStats()">No</a>';
+}
+function doReset() {
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
+function renderAll() {
+  renderStats();
+  renderGrid();
+  renderProjects();
+}
+
+function renderStats() {
+  const lived = weeksLived();
+  const left = weeksLeft();
+  const allWeeks = totalWeeks();
+  const usedPct = allWeeks > 0 ? (lived / allWeeks * 100).toFixed(1) : '0.0';
+  const remainingPct = allWeeks > 0 ? (left / allWeeks * 100).toFixed(1) : '0.0';
+  document.getElementById('sb-age').textContent  = 'Your Life, Maybe';
+  document.getElementById('sb-info').innerHTML   =
+    `<div class="stat-row"><span class="stat-label">Today's date</span><span class="stat-value">${fmtDate(new Date())}</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Date of birth</span><span class="stat-value">${fmtDate(parseDob())}</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Age</span><span class="stat-value">${detailedAge()}</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Country of residence</span><span class="stat-value">${S.country}</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Average lifespan (years)</span><span class="stat-value">${S.le} years</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Average lifespan (weeks)</span><span class="stat-value">${allWeeks.toLocaleString()} weeks</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Weeks used</span><span class="stat-value">${lived.toLocaleString()} weeks (${usedPct}%)</span></div>` +
+    `<div class="stat-row"><span class="stat-label">Weeks remaining</span><span class="stat-value">${left.toLocaleString()} weeks (${remainingPct}%)</span></div>`;
+  document.getElementById('sb-foot-txt').innerHTML = '<a onclick="resetApp()">Start again</a>';
+}
+
+function renderGrid() {
+  const grid  = document.getElementById('week-grid');
+  const lived = weeksLived();
+  const total = totalWeeks();
+  const dob   = new Date(S.dob);
+
+  const birthYear       = dob.getFullYear();
+  const birthWeekInYear = Math.floor((dob - new Date(birthYear, 0, 1)) / MS_WEEK);
+  const endCalYear      = birthYear + Math.ceil((birthWeekInYear + total) / 52) - 1;
+
+  const wc   = getWeekColorMap();
+  cellMap    = {};
+  const frag = document.createDocumentFragment();
+
+  for (let yr = birthYear; yr <= endCalYear; yr++) {
+    const age = yr - birthYear;
+    const row = document.createElement('div');
+    row.className = 'grid-row';
+
+    const lastWi = age * 52 + (51 - birthWeekInYear);
+    const isPast = lastWi >= 0 && lastWi < lived;
+    const lbl    = document.createElement('div');
+    lbl.className   = 'yr-lbl' + (isPast ? ' past' : '');
+    lbl.textContent = (age % 5 === 0) ? age : '';
+    row.appendChild(lbl);
+
+    const cells = document.createElement('div');
+    cells.className = 'cells';
+
+    for (let w = 0; w < 52; w++) {
+      const wi   = age * 52 + (w - birthWeekInYear);
+      const cell = document.createElement('div');
+
+      if (wi < 0 || wi >= total) {
+        cell.className     = 'wk';
+        cell.style.cssText = 'background:transparent;border-color:transparent';
+      } else {
+        cell.dataset.week = wi;
+        cellMap[wi]       = cell;
+        applyCell(cell, wi, lived, wc);
+      }
+
+      cells.appendChild(cell);
+    }
+    row.appendChild(cells);
+    frag.appendChild(row);
+  }
+
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+  fitWeekGrid();
+}
+
+function fitWeekGrid() {
+  const grid = document.getElementById('week-grid');
+  const area = document.getElementById('grid-area');
+  if (!grid || !area || !grid.children.length) return;
+
+  const rows = grid.children.length;
+  const areaStyle = getComputedStyle(area);
+  const paddingX = parseFloat(areaStyle.paddingLeft) + parseFloat(areaStyle.paddingRight);
+  const paddingBottom = parseFloat(areaStyle.paddingBottom);
+  const gridBox = grid.getBoundingClientRect();
+  const availableWidth = area.clientWidth - paddingX;
+  const availableHeight = window.innerHeight - gridBox.top - paddingBottom;
+
+  const gap = Math.max(1, Math.min(3, Math.floor(Math.min(availableWidth, availableHeight) / 320)));
+  const cellW = Math.max(4, (availableWidth - (51 * gap)) / 52);
+  const cellH = Math.max(4, (availableHeight - ((rows - 1) * gap)) / rows);
+
+  document.body.style.setProperty('--wk-w', `${cellW.toFixed(3)}px`);
+  document.body.style.setProperty('--wk-h', `${cellH.toFixed(3)}px`);
+  document.body.style.setProperty('--wk-gap-x', `${gap}px`);
+  document.body.style.setProperty('--wk-gap-y', `${gap}px`);
+}
+
+function applyCell(cell, wi, lived, wc) {
+  cell.style.background = '';
+  cell.style.opacity    = '';
+  if (wc[wi]) {
+    cell.className = 'wk proj';
+    cell.style.background = wc[wi];
+  } else if (wi < lived) {
+    cell.className = 'wk past';
+  } else if (wi === lived) {
+    cell.className = 'wk now';
+  } else {
+    cell.className = 'wk future';
+  }
+}
+
+function renderProjects() {
+  const list = document.getElementById('proj-list');
+  renderProjectStatus();
+  if (S.projects.length === 0) {
+    list.innerHTML = '<p class="no-projs">Type anything to add a project - the app will estimate the duration.</p>';
+    return;
+  }
+  list.innerHTML = S.projects.map(p => {
+    const isP      = placing === p.id;
+    const placed   = p.startWeek !== null;
+    const startAge = placed ? (p.startWeek / 52).toFixed(1) : null;
+    const endAge   = placed ? ((p.startWeek + p.weeks) / 52).toFixed(1) : null;
+    return `<div class="pcard${isP ? ' is-placing' : ''}">
+      <div class="pc-top">
+        <div class="pdot" style="background:${p.color}"></div>
+        <div class="pname">${esc(p.name)}</div>
+        <button class="px-btn" onclick="removeProject(${p.id})">×</button>
+      </div>
+      <div class="pmeta">${fmtWeeks(p.weeks)}${placed ? ` · age ${startAge}–${endAge}` : ''}</div>
+      <button class="pplace${isP ? ' on' : ''}" onclick="togglePlacing(${p.id})">
+        ${isP ? '↑ Cancel' : placed ? '↺ Move' : '↓ Place on grid'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function renderProjectStatus() {
+  const status = document.getElementById('project-status');
+  if (!status) return;
+  const placed = S.projects.filter(p => p.startWeek !== null);
+  const plannedWeeks = placed.reduce((s, p) => s + p.weeks, 0);
+  const left = weeksLeft();
+  const pct = left > 0 ? Math.round(plannedWeeks / left * 100) : 0;
+  status.textContent = S.projects.length > 0
+    ? `${placed.length} project${placed.length !== 1 ? 's' : ''} · ${pct}% of time mapped`
+    : '';
+}
+
+// ── GRID INTERACTION ──────────────────────────────────────────────────────────
+
+function bindGrid() {
+  const grid    = document.getElementById('week-grid');
+  const tooltip = document.getElementById('grid-tooltip');
+  let lastWi    = -1;
+
+  grid.addEventListener('mousemove', e => {
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const wi = el && el.dataset.week !== undefined ? +el.dataset.week : -1;
+
+    if (placing !== null) {
+      tooltip.style.display = 'none';
+      if (wi < 0 || wi < weeksLived() || wi === lastWi) return;
+      lastWi = wi;
+      showPreview(wi);
+      return;
+    }
+
+    if (wi < 0) { tooltip.style.display = 'none'; return; }
+
+    const proj = S.projects.find(p => p.startWeek !== null && wi >= p.startWeek && wi < p.startWeek + p.weeks);
+
+    if (proj) {
+      const startAge = (proj.startWeek / 52).toFixed(1);
+      const endAge   = ((proj.startWeek + proj.weeks) / 52).toFixed(1);
+      tooltip.innerHTML = `<strong>${esc(proj.name)}</strong><br>${proj.weeks} weeks · age ${startAge}–${endAge}`;
+    } else {
+      const dob2            = new Date(S.dob);
+      const birthYear2      = dob2.getFullYear();
+      const birthWeekInYear2 = Math.floor((dob2 - new Date(birthYear2, 0, 1)) / MS_WEEK);
+      const calYear         = birthYear2 + Math.floor((wi + birthWeekInYear2) / 52);
+      const weekInYr        = (wi + birthWeekInYear2) % 52 + 1;
+      const age             = Math.floor(wi / 52);
+      const isNow = wi === weeksLived();
+      tooltip.innerHTML = `Week ${weekInYr} · ${calYear} · Age ${age}${isNow ? '<br>You are here.' : ''}`;
+    }
+    tooltip.style.display = 'block';
+    const tx = e.clientX + 14;
+    const ty = e.clientY - 10;
+    tooltip.style.left = (tx + tooltip.offsetWidth > window.innerWidth ? e.clientX - tooltip.offsetWidth - 8 : tx) + 'px';
+    tooltip.style.top  = ty + 'px';
+  });
+
+  grid.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+    if (placing === null) return;
+    clearPreview();
+    lastWi = -1;
+  });
+
+  grid.addEventListener('click', e => {
+    if (placing === null) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (!el || el.dataset.week === undefined) return;
+    const wi = +el.dataset.week;
+    if (wi < weeksLived()) return;
+    const proj = S.projects.find(p => p.id === placing);
+    if (!proj) return;
+    const snapWi = firstFreeStart(wi, proj.weeks, proj.id);
+    if (snapWi === null) return;
+    commitPlace(snapWi);
+    lastWi = -1;
+  });
+}
+
+function showPreview(startWi) {
+  clearPreview(false);
+  const proj  = S.projects.find(p => p.id === placing);
+  if (!proj) return;
+  const snapWi = firstFreeStart(startWi, proj.weeks, proj.id) ?? startWi;
+  previewFrom = snapWi;
+  const total = totalWeeks();
+  for (let w = snapWi; w < snapWi + proj.weeks && w < total; w++) {
+    const cell = cellMap[w];
+    if (cell) {
+      cell.className = 'wk proj preview';
+      cell.style.background = proj.color;
+      cell.style.opacity    = '0.5';
+    }
+  }
+}
+
+function clearPreview(reset = true) {
+  if (previewFrom < 0) return;
+  const proj  = S.projects.find(p => p.id === placing);
+  const total = totalWeeks();
+  const lived = weeksLived();
+  const wc    = getWeekColorMap();
+  const end   = proj ? previewFrom + proj.weeks : previewFrom + 1;
+  for (let w = previewFrom; w < end && w < total; w++) {
+    const cell = cellMap[w];
+    if (cell) applyCell(cell, w, lived, wc);
+  }
+  if (reset) previewFrom = -1;
+}
+
+// ── PROJECTS ──────────────────────────────────────────────────────────────────
+
+const WORKER_URL    = 'https://tiyl-estimate.cccrrraaaiiiggg.workers.dev';
+const WORKER_SECRET = 'gssf8-2hsq';
+
+async function estimateWithAI(text) {
+  const resp = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Secret': WORKER_SECRET },
+    body: JSON.stringify({ text }),
+  });
+  const body = await resp.text();
+  if (!resp.ok) {
+    console.error('Worker error:', body);
+    throw new Error(`Worker ${resp.status}: ${body}`);
+  }
+  return JSON.parse(body);
+}
+
+function projectFromTemplate(text) {
+  const lower = text.toLowerCase();
+  const tmpl  = TEMPLATES.find(t => t.kw.some(k => lower.includes(k)));
+  return {
+    id: Date.now(),
+    name: projectNameWithInput(tmpl ? tmpl.name : cap(text), text),
+    weeks: tmpl ? tmpl.weeks : 52,
+    color: COLORS[S.nextColor % COLORS.length],
+    startWeek: null,
+  };
+}
+
+function projectNameWithInput(name, text) {
+  const cleanText = text.trim();
+  if (!cleanText) return name;
+  if (name.toLowerCase().includes(cleanText.toLowerCase())) return name;
+  return `${name}: ${cap(cleanText)}`;
+}
+
+async function addProject() {
+  const inp  = document.getElementById('proj-input');
+  const btn  = document.querySelector('.add-row button');
+  const text = inp.value.trim();
+  if (!text || btn.disabled) return;
+
+  inp.disabled = true;
+  btn.textContent = '…';
+  btn.disabled = true;
+  let proj;
+  try {
+    const est = await estimateWithAI(text);
+    proj = {
+      id: Date.now(),
+      name: projectNameWithInput(est.name || cap(text), text),
+      weeks: Math.max(1, Math.min(2600, Math.round(+est.weeks))),
+      color: COLORS[S.nextColor % COLORS.length],
+      startWeek: null,
+    };
+  } catch(e) {
+    proj = projectFromTemplate(text);
+  } finally {
+    inp.disabled = false;
+    btn.textContent = 'Add';
+    btn.disabled = false;
+  }
+
+  S.projects.push(proj);
+  S.nextColor++;
+  inp.value = '';
+  save();
+  renderAll();
+}
+
+function removeProject(id) {
+  if (placing === id) stopPlacing();
+  S.projects = S.projects.filter(p => p.id !== id);
+  save();
+  renderAll();
+}
+
+function togglePlacing(id) {
+  if (placing === id) { stopPlacing(); return; }
+  if (placing !== null) stopPlacing();
+  placing     = id;
+  previewFrom = -1;
+  document.body.classList.add('placing');
+  document.getElementById('place-hint').style.display = '';
+  document.getElementById('project-status').style.display = 'none';
+  renderProjects();
+  const currentCell = cellMap[weeksLived()];
+  if (currentCell) currentCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function stopPlacing() {
+  clearPreview();
+  placing = null;
+  document.body.classList.remove('placing');
+  document.getElementById('place-hint').style.display = 'none';
+  document.getElementById('project-status').style.display = '';
+  renderProjects();
+}
+
+function commitPlace(wi) {
+  const proj = S.projects.find(p => p.id === placing);
+  if (!proj) { stopPlacing(); return; }
+  clearPreview();
+  proj.startWeek = wi;
+  stopPlacing();
+  save();
+  renderAll();
+}
+
+// ── PLACEMENT HELPERS ────────────────────────────────────────────────────────
+
+function firstFreeStart(fromWi, projWeeks, excludeId) {
+  const total = totalWeeks();
+  let wi = fromWi;
+  while (wi + projWeeks <= total) {
+    let conflict = null;
+    for (const p of S.projects) {
+      if (p.id === excludeId || p.startWeek === null) continue;
+      if (wi < p.startWeek + p.weeks && wi + projWeeks > p.startWeek) {
+        conflict = p; break;
+      }
+    }
+    if (!conflict) return wi;
+    wi = conflict.startWeek + conflict.weeks;
+  }
+  return null;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function getWeekColorMap() {
+  const wc = {};
+  S.projects.forEach(p => {
+    if (p.startWeek !== null) {
+      const total = totalWeeks();
+      for (let w = p.startWeek; w < p.startWeek + p.weeks && w < total; w++) wc[w] = p.color;
+    }
+  });
+  return wc;
+}
+
+function fmtWeeks(w) {
+  return w === 1 ? `1 week` : `${w} weeks`;
+}
+
+function cap(s)  { return s.charAt(0).toUpperCase() + s.slice(1); }
+function esc(s)  { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function save()  { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && placing !== null) stopPlacing();
+});
+window.addEventListener('resize', fitWeekGrid);
+
+init();
+</script>
+</body>
+</html>
