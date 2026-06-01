@@ -1,4 +1,4 @@
-const LAST_UPDATED = 'May 2026';
+const LAST_UPDATED = 'June 2026';
 
 const PROJECTS = [
   { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/average/index.html',                               tags: ['interactive', 'tool', 'data visualisation', 'mortality', 'life expectancy', 'website'] },

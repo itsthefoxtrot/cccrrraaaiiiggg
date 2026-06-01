@@ -546,7 +546,7 @@ button, select { font: inherit; color: inherit; }
 .badge.auto { background: #000080; color: #fff; border-color: #000; }
 .locked {
   opacity: .68;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: 96px minmax(0, 1fr);
 }
 .upgrade-card {
   padding: 8px;
@@ -1653,20 +1653,10 @@ function upgradeCardHtml(upg) {
     <button class="btn" data-action="buy-upgrade" data-upgrade-id="${upg.id}" ${canAfford(upg.cost) ? '' : 'disabled'}>Buy for ${headerMoney(upg.cost)}</button>
   </div>`;
 }
-let _shownUpgradeId = null;
 function renderUpgrades() {
   const available = upgradeDefs.filter(isUpgradeUnlocked);
-  // Keep the current upgrade on screen until it is purchased
-  if (_shownUpgradeId && available.find(u => u.id === _shownUpgradeId)) {
-    const upg = upgradeDefs.find(u => u.id === _shownUpgradeId);
-    document.getElementById('upgrade-list').innerHTML = upgradeCardHtml(upg);
-    return;
-  }
-  // Advance to the next in sequence
-  const next = available[0] ?? null;
-  _shownUpgradeId = next ? next.id : null;
-  document.getElementById('upgrade-list').innerHTML = next
-    ? upgradeCardHtml(next)
+  document.getElementById('upgrade-list').innerHTML = available.length
+    ? available.map(upgradeCardHtml).join('')
     : '<div class="desk-card"><span style="color:#555;font-size:11px;">No upgrades available.</span></div>';
 }
 
