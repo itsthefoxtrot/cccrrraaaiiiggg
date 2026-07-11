@@ -1,6 +1,7 @@
-const LAST_UPDATED = 'June 2026';
+const LAST_UPDATED = 'July 2026';
 
 const PROJECTS = [
+  { title: 'Hellcatica',                                  slug: null, newTab: true,   external: true, path: 'https://www.hellcatica.com/',                tags: ['interactive', 'web', 'website'] },
   { title: 'Average',                                    slug: null, newTab: true,   path: 'sites/average/index.html',                               tags: ['interactive', 'tool', 'data visualisation', 'mortality', 'life expectancy', 'website'] },
   { title: 'Genesis',                                    slug: null, newTab: true,   path: 'sites/genesis/index.html',                               tags: ['game', 'idle clicker', 'browser game', 'interactive', 'website'] },
   { title: 'Fallibili',                                  slug: 'fallibili',          path: 'projects/fallibili/fallibili.html',                      tags: ['music', 'ambient', 'field recordings', 'zurich', 'switzerland', 'experimental'] },
