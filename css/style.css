@@ -260,6 +260,7 @@ img {
 }
 
 .sidebar-section-label {
+  display: block;
   font-family: 'Barlow', sans-serif;
   font-weight: 700;
   font-size: 0.65rem;
@@ -267,7 +268,11 @@ img {
   letter-spacing: 0.1em;
   color: #14213D;
   opacity: 0.45;
-  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.sidebar-projects > .sidebar-section-label:first-child {
+  margin-top: 0;
 }
 
 .sidebar-search-wrap {
