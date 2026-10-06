@@ -34,8 +34,10 @@ const PROJECTS = [
   { title: 'The Church of Pizza and Next Day Reheats',   slug: null, newTab: true,    path: 'sites/churchofpizza/index.html',                        category: 'Web',          tags: ['interactive', 'web', 'food', 'website'] },
   { title: 'Pips',                                       slug: 'pips',               path: 'projects/pips/pips.html',                                category: 'Web',          tags: ['app', 'iOS', 'design', 'sound', 'interactive', 'alarm', 'mobile'] },
   { title: 'The Lanf',                                   slug: 'the-lanf',           path: 'projects/the-lanf/the-lanf.html',                        category: 'Painting',     tags: ['sculpture', 'mask', 'mixed media', 'fine art', 'papier-mache'] },
-  { title: 'Crowds of Men',                              slug: 'crowds-of-men',      path: 'projects/Crowds%20Of%20Men/crowds-of-men.html',          category: 'Illustration', tags: ['illustration', 'digital art'] },
+  { title: 'Pierre Geon',                                slug: 'pierre-geon',        path: 'projects/pierre-geon/pierre-geon.html',                  category: 'Illustration', tags: ['illustration', 'comic', 'comic strip', 'drawing'] },
   { title: 'The Buzzies',                                slug: 'the-buzzies',        path: 'projects/the-buzzies/the-buzzies.html',                  category: 'Illustration', tags: ['illustration', 'design', 'character design', 'digital art', 'branding'] },
+  { title: 'Lessons for Less',                           slug: 'lessons-for-less',   path: 'projects/lessons-for-less/lessons-for-less.html',        category: 'Illustration', tags: ['illustration', 'drawing', 'digital art', 'sketch'] },
+  { title: 'Crowds of Men',                              slug: 'crowds-of-men',      path: 'projects/Crowds%20Of%20Men/crowds-of-men.html',          category: 'Illustration', tags: ['illustration', 'digital art'] },
 ];
 
 class SiteSidebar extends HTMLElement {
